@@ -3,13 +3,25 @@
 毕业论文第四章 一个自动化的ARM指令集架构模拟器的测试方法（Chapter 4: A General Approach on Automatic ARM ISA Emulator Debugging） 的源代码。
 
 
+/src
+
+
+源码
+
+
+/schematic
+
+
+电路图
+
+
 大致原理及步骤：
 
 
 1：焊接stm32f4开发板和gba游戏机卡带接口，stm32f4开发板接收gba对卡带的读写访问。
 
 
-gba卡带3.3v 16.78MHz，stm32f4引脚3.3v 168MHz。
+gba卡带3.3v 16.78MHz，stm32f4引脚3.3v APB2 168MHz APB1 84MHz。
 
 
 （都是3.3v，不需要上下拉电阻）
