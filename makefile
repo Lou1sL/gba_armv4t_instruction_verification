@@ -1,69 +1,68 @@
-APP_NAME = gbainsver
 
-SRC_DIR = ./src
-BUILD_DIR = ./build
-COMPILER_DIR = /home/wasm_arm-gcc
-STLINK= ~/stlink.git
-STM_COMMON=../../..
+# Envirmental Settings -------------
 
-CC      = "$(COMPILER_DIR)/bin/arm-none-eabi-gcc"
-CXX     = "$(COMPILER_DIR)/bin/arm-none-eabi-g++"
-ASM     = "$(COMPILER_DIR)/bin/arm-none-eabi-as"
-LINK    = "$(COMPILER_DIR)/bin/arm-none-eabi-g++"
-OBJCOPY = "$(COMPILER_DIR)/bin/arm-none-eabi-objcopy"
+COMPILER_DIR = "E:/ProgramTools/gcc-arm-none-eabi/bin"
+STLINK_DIR   = "E:/ProgramTools/stlink/bin"
+STM32LIB_DIR = "E:/ProgramTools/STM32Lib"
 
+# ----------------------------------
 
+CC      = "$(COMPILER_DIR)/arm-none-eabi-gcc"
+CXX     = "$(COMPILER_DIR)/arm-none-eabi-g++"
+ASM     = "$(COMPILER_DIR)/arm-none-eabi-as"
+LINK    = "$(COMPILER_DIR)/arm-none-eabi-g++"
+OBJCOPY = "$(COMPILER_DIR)/arm-none-eabi-objcopy"
 
+STFLASH = "$(STLINK_DIR)/st-flash"
 
+# Libraries ------------------------
 
+STM32LIB_INCLUDE  = "-I$(STM32LIB_DIR)/Libraries/CMSIS/Include "
+STM32LIB_INCLUDE += "-I$(STM32LIB_DIR)/Libraries/CMSIS/Device/ST/STM32F4xx/Include "
+STM32LIB_INCLUDE += "-I$(STM32LIB_DIR)/Libraries/STM32F4xx_StdPeriph_Driver/inc "
+# STM32LIB_INCLUDE += "-I$(STM32LIB_DIR)/Utilities/STM32F4-Discovery "
 
+vpath %.c $(STM32LIB_DIR)/Libraries/STM32F4xx_StdPeriph_Driver/src # $(STM32LIB_DIR)/Utilities/STM32F4-Discovery
+STM32LIB_SRC  = stm32f4xx_exti.c stm32f4xx_gpio.c stm32f4xx_rcc.c stm32f4xx_syscfg.c
+STM32LIB_SRC += stm32f4xx_tim.c misc.c
+# STM32LIB_SRC += stm32f4_discovery.c
+# STM32LIB_SRC += "$(STM32LIB_DIR)/Libraries/CMSIS/ST/STM32F4xx/Source/Templates/TrueSTUDIO/startup_stm32f4xx.s "
 
+# ----------------------------------
 
+# Project Settings -----------------
 
+APP_NAME     = gbainsver
+BUILD_DIR    = ./build
+SRC_DIR      = ./src
+INCLUDE_DIR  = ./src
+LINKER_PATH  = ./src/stm32f4.ld
 
-
-SRCS= main.c system_stm32f4xx.c stm32f4xx_it.c
-
-# Library modules
-SRCS += stm32f4xx_exti.c stm32f4xx_gpio.c stm32f4xx_rcc.c stm32f4xx_syscfg.c
-SRCS += stm32f4xx_tim.c misc.c
-SRCS += stm32f4_discovery.c
-
-#######################################################################################
-
-
-
-CC=arm-none-eabi-gcc
-OBJCOPY=arm-none-eabi-objcopy
-
-CFLAGS  = -g -O2 -Wall -Tstm32_flash.ld 
-CFLAGS += -DUSE_STDPERIPH_DRIVER
-CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
-CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I.
-
-# Include files from STM libraries
-CFLAGS += -I$(STM_COMMON)/Utilities/STM32F4-Discovery
-CFLAGS += -I$(STM_COMMON)/Libraries/CMSIS/Include 
-CFLAGS += -I$(STM_COMMON)/Libraries/CMSIS/ST/STM32F4xx/Include
-CFLAGS += -I$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/inc
-
-
-# add startup file to build
-SRCS += $(STM_COMMON)/Libraries/CMSIS/ST/STM32F4xx/Source/Templates/TrueSTUDIO/startup_stm32f4xx.s 
-
+SRCS = $(SRC_DIR)/main.cpp
+# SRCS += $(SRC_DIR)/system_stm32f4xx.c $(SRC_DIR)/stm32f4xx_it.c
+SRCS += $(STM32LIB_SRC)
 OBJS = $(SRCS:.c=.o)
 
-vpath %.c $(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src $(STM_COMMON)/Utilities/STM32F4-Discovery
+# ----------------------------------
 
-.PHONY: proj
+# Compiling Flags ------------------
+
+CXXFLAGS  = -g -O2 -Wall -T $(LINKER_PATH)
+CXXFLAGS += -DUSE_STDPERIPH_DRIVER
+CXXFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
+CXXFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+CXXFLAGS += $(STM32LIB_INCLUDE) -I$(INCLUDE_DIR)
+
+# ----------------------------------
+
+.PHONY: all clean
 
 all: proj
 
 proj: $(BUILD_DIR)/$(APP_NAME).elf
 
 $(BUILD_DIR)/$(APP_NAME).elf: $(SRCS)
-	$(CXX) $(CFLAGS) $^ -o $@ 
+	$(CXX) $(CXXFLAGS) $^ -o $@ 
 	$(OBJCOPY) -O ihex $(BUILD_DIR)/$(APP_NAME).elf $(BUILD_DIR)/$(APP_NAME).hex
 	$(OBJCOPY) -O binary $(BUILD_DIR)/$(APP_NAME).elf $(BUILD_DIR)/$(APP_NAME).bin
 
@@ -75,4 +74,4 @@ clean:
 	-rm $(BUILD_DIR)/*.hex
 
 burn: proj
-	$(STLINK)/st-flash write $(BUILD_DIR)/$(APP_NAME).bin 0x8000000
+	$(STFLASH) write $(BUILD_DIR)/$(APP_NAME).bin 0x8000000
