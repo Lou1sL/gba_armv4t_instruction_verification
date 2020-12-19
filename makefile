@@ -1,17 +1,17 @@
 
 # Envirmental Settings -------------
 
-COMPILER_DIR = "E:/ProgramTools/gcc-arm-none-eabi/bin"
-STLINK_DIR   = "E:/ProgramTools/stlink/bin"
-STM32LIB_DIR = "E:/ProgramTools/STM32Lib"
+COMPILER_DIR = "/mnt/e/ProgramTools/gcc-arm-none-eabi/bin"
+STLINK_DIR   = "/mnt/e/ProgramTools/stlink/bin"
+STM32LIB_DIR = "/mnt/e/ProgramTools/STM32Lib"
 
 # ----------------------------------
 
-CC      = "$(COMPILER_DIR)/arm-none-eabi-gcc"
-CXX     = "$(COMPILER_DIR)/arm-none-eabi-g++"
-ASM     = "$(COMPILER_DIR)/arm-none-eabi-as"
-LINK    = "$(COMPILER_DIR)/arm-none-eabi-g++"
-OBJCOPY = "$(COMPILER_DIR)/arm-none-eabi-objcopy"
+CC      = "$(COMPILER_DIR)/arm-none-eabi-gcc.exe"
+CXX     = "$(COMPILER_DIR)/arm-none-eabi-g++.exe"
+ASM     = "$(COMPILER_DIR)/arm-none-eabi-as.exe"
+LINK    = "$(COMPILER_DIR)/arm-none-eabi-g++.exe"
+OBJCOPY = "$(COMPILER_DIR)/arm-none-eabi-objcopy.exe"
 
 STFLASH = "$(STLINK_DIR)/st-flash"
 
@@ -38,10 +38,10 @@ SRC_DIR      = ./src
 INCLUDE_DIR  = ./src
 LINKER_PATH  = ./src/stm32f4.ld
 
-SRCS = $(SRC_DIR)/main.cpp
+SRCS  = $(SRC_DIR)/main.cpp
 # SRCS += $(SRC_DIR)/system_stm32f4xx.c $(SRC_DIR)/stm32f4xx_it.c
 SRCS += $(STM32LIB_SRC)
-OBJS = $(SRCS:.c=.o)
+OBJS  = $(SRCS:.c=.o)
 
 # ----------------------------------
 
@@ -75,3 +75,5 @@ clean:
 
 burn: proj
 	$(STFLASH) write $(BUILD_DIR)/$(APP_NAME).bin 0x8000000
+
+$(info $(SRCS))
