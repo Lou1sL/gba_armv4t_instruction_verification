@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>E:\Projects\Hardware\gba_armv4t_instruction_verification\schematic\insver\insver.sch</source>
+    <date>12/19/2020 15:39:25</date>
+    <tool>Eeschema (5.1.4)-1</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>insver.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="U1">
+      <value>74AC191</value>
+      <libsource lib="74xx" part="74AC191" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDE5F7A</tstamp>
+    </comp>
+    <comp ref="J1">
+      <value>CARTRIDGE_CONNECTOR_AGB</value>
+      <libsource lib="74xx" part="CARTRIDGE_CONNECTOR_AGB" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDE68C9</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>74AC191</value>
+      <libsource lib="74xx" part="74AC191" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDEA9CF</tstamp>
+    </comp>
+    <comp ref="U3">
+      <value>74AC191</value>
+      <libsource lib="74xx" part="74AC191" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDEAD3C</tstamp>
+    </comp>
+    <comp ref="U4">
+      <value>74AC191</value>
+      <libsource lib="74xx" part="74AC191" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDEB130</tstamp>
+    </comp>
+    <comp ref="U6">
+      <value>74AC08</value>
+      <libsource lib="74xx" part="74AC08" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDEC6CB</tstamp>
+    </comp>
+    <comp ref="U5">
+      <value>74AC00</value>
+      <libsource lib="74xx" part="74AC00" description=""/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5FDEBE56</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="74xx" part="74AC00">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">74AC00</field>
+      </fields>
+      <pins>
+        <pin num="~" name="~" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="74xx" part="74AC08">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">74AC08</field>
+      </fields>
+      <pins>
+        <pin num="~" name="~" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="74xx" part="74AC191">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">74AC191</field>
+      </fields>
+      <pins>
+        <pin num="~" name="CP" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="74xx" part="CARTRIDGE_CONNECTOR_AGB">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">CARTRIDGE_CONNECTOR_AGB</field>
+      </fields>
+      <pins>
+        <pin num="~" name="AD11" type="BiDi"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="74xx">
+      <uri>E:\ProgramTools\KiCad\share\kicad\library/74xx.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="2" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="3" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="4" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="5" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="6" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="7" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="8" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="9" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="10" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="11" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="12" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="13" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="14" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="15" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="16" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+      <node ref="U4" pin="~"/>
+      <node ref="U2" pin="~"/>
+      <node ref="U3" pin="~"/>
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="17" name="Net-(U1-Pad~)">
+      <node ref="U2" pin="~"/>
+      <node ref="U6" pin="~"/>
+      <node ref="U4" pin="~"/>
+      <node ref="U3" pin="~"/>
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="18" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="19" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="20" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="21" name="A18">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="27" name="A23">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="28" name="A22">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="29" name="A21">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="30" name="A20">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="31" name="A19">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="33" name="A17">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="34" name="A16">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="36" name="~RE">
+      <node ref="J1" pin="~"/>
+      <node ref="U6" pin="~"/>
+    </net>
+    <net code="37" name="~CE">
+      <node ref="J1" pin="~"/>
+      <node ref="U5" pin="~"/>
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="38" name="VCC">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="45" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="46" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="47" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="48" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="49" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="50" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="51" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="52" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="53" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="54" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="55" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="56" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="57" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="58" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="59" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="60" name="Net-(U6-Pad~)">
+      <node ref="U6" pin="~"/>
+    </net>
+    <net code="61" name="Net-(U6-Pad~)">
+      <node ref="U6" pin="~"/>
+    </net>
+    <net code="62" name="Net-(U6-Pad~)">
+      <node ref="U6" pin="~"/>
+    </net>
+    <net code="63" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="64" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="65" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="66" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="67" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="68" name="Net-(U5-Pad~)">
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="69" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="70" name="Net-(U1-Pad~)">
+      <node ref="U1" pin="~"/>
+      <node ref="U5" pin="~"/>
+      <node ref="U5" pin="~"/>
+    </net>
+    <net code="71" name="GND">
+      <node ref="U2" pin="~"/>
+      <node ref="U4" pin="~"/>
+      <node ref="J1" pin="~"/>
+      <node ref="U3" pin="~"/>
+      <node ref="U1" pin="~"/>
+      <node ref="U1" pin="~"/>
+    </net>
+    <net code="72" name="~WE">
+      <node ref="J1" pin="~"/>
+      <node ref="U6" pin="~"/>
+    </net>
+    <net code="73" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="74" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="75" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+    <net code="76" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="77" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="78" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="79" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="80" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="81" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="82" name="Net-(U2-Pad~)">
+      <node ref="U2" pin="~"/>
+    </net>
+    <net code="83" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="84" name="Net-(U3-Pad~)">
+      <node ref="U3" pin="~"/>
+    </net>
+    <net code="85" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="88" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="89" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="90" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="91" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="92" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="93" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="94" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="95" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="96" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="97" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="98" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="99" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="100" name="Net-(J1-Pad~)">
+      <node ref="J1" pin="~"/>
+    </net>
+    <net code="101" name="Net-(U4-Pad~)">
+      <node ref="U4" pin="~"/>
+    </net>
+  </nets>
+</export>

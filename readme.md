@@ -15,13 +15,32 @@
 电路图
 
 
+GBA卡带：
+
+类似ARM CPU，GBA卡带也分为Non-Sequential和Sequential，第一次读写一定为Non-Sequential。
+
+
+卡带读：
+
+1：Address on AD0-AD15 & A16-A23, ~CS lo
+
+2: ~RD lo
+
+3: ~RD hi (address increment, rising edge read)
+
+
+
 大致原理及步骤：
 
 
-1：焊接stm32f4开发板和gba游戏机卡带接口，stm32f4开发板接收gba对卡带的读写访问。
-
+1：stm32f4开发板接gba游戏机卡带接口，stm32f4开发板接收gba对卡带的读写访问。
+（读写触发DMA?）
 
 gba卡带3.3v 16.78MHz，stm32f4引脚3.3v APB2 168MHz APB1 84MHz。
+
+
+卡带A0-A23, 24位地址+1最低位默认0 = 25位 寻址32MBytes(1FFFFFF)。
+卡带A0-A15共用D0-D15，2Bytes每访问，
 
 
 （都是3.3v，不需要上下拉电阻）
