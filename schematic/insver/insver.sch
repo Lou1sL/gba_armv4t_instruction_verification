@@ -213,97 +213,97 @@ Entry Wire Line
 	9350 5000 9450 5100
 Entry Wire Line
 	9350 5100 9450 5200
-Text GLabel 9700 2900 2    50   Input ~ 0
+Text GLabel 9700 2900 2    50   Output ~ 0
 A00
-Text GLabel 9700 3000 2    50   Input ~ 0
+Text GLabel 9700 3000 2    50   Output ~ 0
 A01
-Text GLabel 9700 3100 2    50   Input ~ 0
+Text GLabel 9700 3100 2    50   Output ~ 0
 A02
-Text GLabel 9700 3200 2    50   Input ~ 0
+Text GLabel 9700 3200 2    50   Output ~ 0
 A03
-Text GLabel 9700 3300 2    50   Input ~ 0
+Text GLabel 9700 3300 2    50   Output ~ 0
 A04
-Text GLabel 9700 3400 2    50   Input ~ 0
+Text GLabel 9700 3400 2    50   Output ~ 0
 A05
-Text GLabel 9700 3500 2    50   Input ~ 0
+Text GLabel 9700 3500 2    50   Output ~ 0
 A06
-Text GLabel 9700 3600 2    50   Input ~ 0
+Text GLabel 9700 3600 2    50   Output ~ 0
 A07
-Text GLabel 9700 3700 2    50   Input ~ 0
+Text GLabel 9700 3700 2    50   Output ~ 0
 A08
-Text GLabel 9700 3800 2    50   Input ~ 0
+Text GLabel 9700 3800 2    50   Output ~ 0
 A09
-Text GLabel 9700 3900 2    50   Input ~ 0
+Text GLabel 9700 3900 2    50   Output ~ 0
 A10
-Text GLabel 9700 4000 2    50   Input ~ 0
+Text GLabel 9700 4000 2    50   Output ~ 0
 A11
-Text GLabel 9700 4100 2    50   Input ~ 0
+Text GLabel 9700 4100 2    50   Output ~ 0
 A12
-Text GLabel 9700 4200 2    50   Input ~ 0
+Text GLabel 9700 4200 2    50   Output ~ 0
 A13
-Text GLabel 9700 4300 2    50   Input ~ 0
+Text GLabel 9700 4300 2    50   Output ~ 0
 A14
-Text GLabel 9700 4400 2    50   Input ~ 0
+Text GLabel 9700 4400 2    50   Output ~ 0
 A15
-Text GLabel 9700 4500 2    50   Input ~ 0
+Text GLabel 9700 4500 2    50   Output ~ 0
 A16
-Text GLabel 9700 4600 2    50   Input ~ 0
+Text GLabel 9700 4600 2    50   Output ~ 0
 A17
-Text GLabel 9700 4700 2    50   Input ~ 0
+Text GLabel 9700 4700 2    50   Output ~ 0
 A18
-Text GLabel 9700 4800 2    50   Input ~ 0
+Text GLabel 9700 4800 2    50   Output ~ 0
 A19
-Text GLabel 9700 4900 2    50   Input ~ 0
+Text GLabel 9700 4900 2    50   Output ~ 0
 A20
-Text GLabel 9700 5000 2    50   Input ~ 0
+Text GLabel 9700 5000 2    50   Output ~ 0
 A21
-Text GLabel 9700 5100 2    50   Input ~ 0
+Text GLabel 9700 5100 2    50   Output ~ 0
 A22
-Text GLabel 9700 5200 2    50   Input ~ 0
+Text GLabel 9700 5200 2    50   Output ~ 0
 A23
 Entry Wire Line
 	9350 2800 9450 2900
-Text GLabel 10400 2350 2    50   Input ~ 0
+Text GLabel 10400 2350 2    50   BiDi ~ 0
 D00
 Entry Wire Line
 	10050 2250 10150 2350
-Text GLabel 10400 2450 2    50   Input ~ 0
+Text GLabel 10400 2450 2    50   BiDi ~ 0
 D01
 Entry Wire Line
 	10050 2350 10150 2450
-Text GLabel 10400 2550 2    50   Input ~ 0
+Text GLabel 10400 2550 2    50   BiDi ~ 0
 D02
 Entry Wire Line
 	10050 2450 10150 2550
-Text GLabel 10400 2650 2    50   Input ~ 0
+Text GLabel 10400 2650 2    50   BiDi ~ 0
 D03
 Entry Wire Line
 	10050 2550 10150 2650
-Text GLabel 10400 2750 2    50   Input ~ 0
+Text GLabel 10400 2750 2    50   BiDi ~ 0
 D04
 Entry Wire Line
 	10050 2650 10150 2750
-Text GLabel 10400 2850 2    50   Input ~ 0
+Text GLabel 10400 2850 2    50   BiDi ~ 0
 D05
 Entry Wire Line
 	10050 2750 10150 2850
-Text GLabel 10400 2950 2    50   Input ~ 0
+Text GLabel 10400 2950 2    50   BiDi ~ 0
 D06
 Entry Wire Line
 	10050 2850 10150 2950
-Text GLabel 10400 3050 2    50   Input ~ 0
+Text GLabel 10400 3050 2    50   BiDi ~ 0
 D07
 Entry Wire Line
 	10050 2950 10150 3050
-Text GLabel 10400 3150 2    50   Input ~ 0
+Text GLabel 10400 3150 2    50   BiDi ~ 0
 D08
 Entry Wire Line
 	10050 3050 10150 3150
-Text GLabel 10400 3250 2    50   Input ~ 0
+Text GLabel 10400 3250 2    50   BiDi ~ 0
 D09
 Entry Wire Line
 	10050 3150 10150 3250
-Text GLabel 10400 3350 2    50   Input ~ 0
+Text GLabel 10400 3350 2    50   BiDi ~ 0
 D10
 Entry Wire Line
 	10050 3250 10150 3350
@@ -317,15 +317,15 @@ Entry Wire Line
 	10050 3650 10150 3750
 Entry Wire Line
 	10050 3750 10150 3850
-Text GLabel 10400 3450 2    50   Input ~ 0
+Text GLabel 10400 3450 2    50   BiDi ~ 0
 D11
-Text GLabel 10400 3550 2    50   Input ~ 0
+Text GLabel 10400 3550 2    50   BiDi ~ 0
 D12
-Text GLabel 10400 3650 2    50   Input ~ 0
+Text GLabel 10400 3650 2    50   BiDi ~ 0
 D13
-Text GLabel 10400 3750 2    50   Input ~ 0
+Text GLabel 10400 3750 2    50   BiDi ~ 0
 D14
-Text GLabel 10400 3850 2    50   Input ~ 0
+Text GLabel 10400 3850 2    50   BiDi ~ 0
 D15
 Wire Wire Line
 	1850 4900 1900 4900
@@ -545,13 +545,13 @@ Text Label 9450 4300 0    50   ~ 0
 A14
 Text Label 9450 4400 0    50   ~ 0
 A15
-Text GLabel 3350 1800 2    50   Input ~ 0
+Text GLabel 3350 1800 2    50   Output ~ 0
 ~WE
 Wire Wire Line
 	2000 1550 2000 1600
-Text GLabel 2700 1600 1    50   Input ~ 0
+Text GLabel 2700 1600 1    50   Output ~ 0
 ~CE
-Text GLabel 3050 1600 1    50   Input ~ 0
+Text GLabel 3050 1600 1    50   Output ~ 0
 ~RE
 Wire Wire Line
 	3750 4350 3700 4350
@@ -1089,10 +1089,10 @@ Connection ~ 1900 4850
 Wire Wire Line
 	1900 4850 1900 4900
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0107
 U 1 1 60AC671F
 P 2350 1600
-F 0 "#PWR?" H 2350 1350 50  0001 C CNN
+F 0 "#PWR0107" H 2350 1350 50  0001 C CNN
 F 1 "GND" H 2355 1427 50  0000 C CNN
 F 2 "" H 2350 1600 50  0001 C CNN
 F 3 "" H 2350 1600 50  0001 C CNN

@@ -213,33 +213,33 @@ Entry Wire Line
 	9350 5000 9450 5100
 Entry Wire Line
 	9350 5100 9450 5200
-Text GLabel 9700 2900 2    50   Input ~ 0
+Text GLabel 9700 2900 2    50   Output ~ 0
 A00
-Text GLabel 9700 3000 2    50   Input ~ 0
+Text GLabel 9700 3000 2    50   Output ~ 0
 A01
-Text GLabel 9700 3100 2    50   Input ~ 0
+Text GLabel 9700 3100 2    50   Output ~ 0
 A02
-Text GLabel 9700 3200 2    50   Input ~ 0
+Text GLabel 9700 3200 2    50   Output ~ 0
 A03
-Text GLabel 9700 3300 2    50   Input ~ 0
+Text GLabel 9700 3300 2    50   Output ~ 0
 A04
-Text GLabel 9700 3400 2    50   Input ~ 0
+Text GLabel 9700 3400 2    50   Output ~ 0
 A05
-Text GLabel 9700 3500 2    50   Input ~ 0
+Text GLabel 9700 3500 2    50   Output ~ 0
 A06
-Text GLabel 9700 3600 2    50   Input ~ 0
+Text GLabel 9700 3600 2    50   Output ~ 0
 A07
-Text GLabel 9700 3700 2    50   Input ~ 0
+Text GLabel 9700 3700 2    50   Output ~ 0
 A08
-Text GLabel 9700 3800 2    50   Input ~ 0
+Text GLabel 9700 3800 2    50   Output ~ 0
 A09
-Text GLabel 9700 3900 2    50   Input ~ 0
+Text GLabel 9700 3900 2    50   Output ~ 0
 A10
-Text GLabel 9700 4000 2    50   Input ~ 0
+Text GLabel 9700 4000 2    50   Output ~ 0
 A11
-Text GLabel 9700 4100 2    50   Input ~ 0
+Text GLabel 9700 4100 2    50   Output ~ 0
 A12
-Text GLabel 9700 4200 2    50   Input ~ 0
+Text GLabel 9700 4200 2    50   Output ~ 0
 A13
 Text GLabel 9700 4300 2    50   Input ~ 0
 A14
@@ -263,11 +263,11 @@ Text GLabel 9700 5200 2    50   Input ~ 0
 A23
 Entry Wire Line
 	9350 2800 9450 2900
-Text GLabel 10400 2350 2    50   Input ~ 0
+Text GLabel 10400 2350 2    50   BiDi ~ 0
 D00
 Entry Wire Line
 	10050 2250 10150 2350
-Text GLabel 10400 2450 2    50   Input ~ 0
+Text GLabel 10400 2450 2    50   BiDi ~ 0
 D01
 Entry Wire Line
 	10050 2350 10150 2450
@@ -545,13 +545,13 @@ Text Label 9450 4300 0    50   ~ 0
 A14
 Text Label 9450 4400 0    50   ~ 0
 A15
-Text GLabel 3350 1800 2    50   Input ~ 0
+Text GLabel 3350 1800 2    50   Output ~ 0
 ~WE
 Wire Wire Line
 	2000 1550 2000 1600
-Text GLabel 2700 1600 1    50   Input ~ 0
+Text GLabel 2700 1600 1    50   Output ~ 0
 ~CE
-Text GLabel 3050 1600 1    50   Input ~ 0
+Text GLabel 3050 1600 1    50   Output ~ 0
 ~RE
 Wire Wire Line
 	3750 4350 3700 4350
@@ -1089,10 +1089,10 @@ Connection ~ 1900 4850
 Wire Wire Line
 	1900 4850 1900 4900
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0107
 U 1 1 60AC671F
 P 2350 1600
-F 0 "#PWR?" H 2350 1350 50  0001 C CNN
+F 0 "#PWR0107" H 2350 1350 50  0001 C CNN
 F 1 "GND" H 2355 1427 50  0000 C CNN
 F 2 "" H 2350 1600 50  0001 C CNN
 F 3 "" H 2350 1600 50  0001 C CNN
@@ -1123,6 +1123,8 @@ Text Notes 10550 7650 0    50   ~ 0
 A
 Text Notes 8100 7650 0    50   ~ 0
 12/19/2020\n
+Text Notes 7150 6850 0    79   ~ 0
+GBA cartridge bus de-multiplexing and handling \nsequencial bus accessing, using 74191 as counter.\n
 Wire Bus Line
 	2300 3800 2300 5250
 Wire Bus Line
@@ -1135,6 +1137,4 @@ Wire Bus Line
 	10050 2200 10050 3800
 Wire Bus Line
 	9350 2750 9350 5250
-Text Notes 7100 6750 0    79   ~ 0
-GBA卡带总线解复用，ARM特性Sequential Access不给地址，所以74191做Counter\n
 $EndSCHEMATC
