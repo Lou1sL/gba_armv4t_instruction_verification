@@ -1,3 +1,3 @@
 @echo off
 
-E:\dockershare\tool\stlink\bin\st-flash.exe write .\build\gbainsver.bin 0x8000000
+"E:\dockershare\tool\stlink_util\ST-LINK_CLI.exe" -P .\build\gbainsver.bin 0x08000000

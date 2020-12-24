@@ -62,8 +62,7 @@ $(BUILD_DIR)/$(APP_NAME).elf: $(SRCS)
 	$(OBJCOPY) -O binary $(BUILD_DIR)/$(APP_NAME).elf $(BUILD_DIR)/$(APP_NAME).bin
 
 clean:
-	-rm $(BUILD_DIR)/*.o
-	-rm $(BUILD_DIR)/*.elf
-	-rm $(BUILD_DIR)/*.map
-	-rm $(BUILD_DIR)/*.bin
-	-rm $(BUILD_DIR)/*.hex
+	-rm $(BUILD_DIR)/$(APP_NAME).bin
+	-rm $(BUILD_DIR)/$(APP_NAME).elf
+	-rm $(BUILD_DIR)/$(APP_NAME).hex
+	-rm $(BUILD_DIR)/$(APP_NAME).map
