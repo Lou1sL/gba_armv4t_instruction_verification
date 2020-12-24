@@ -1,9 +1,29 @@
 
 #include "main.h"
 
-GPIO_InitTypeDef  GPIO_InitStructure;
+/* GPIO interrupt on PCx */
+void gpio_int(void) {
 
-/* GPIO Address on PD{0-15} and PE{0-7} */
+  EXTI_HandleTypeDef EXTI_HandleStruct;
+  EXTI_HandleStruct.Line = EXTI_LINE_0;
+
+  EXTI_ConfigTypeDef EXTI_ConfigStruct;
+  EXTI_ConfigStruct.Line = EXTI_LINE_0; //Exti lines 0 to 15 are linked to gpio pin number 0 to 15.
+  EXTI_ConfigStruct.Mode = EXTI_MODE_INTERRUPT;
+  EXTI_ConfigStruct.Trigger = EXTI_TRIGGER_RISING;
+  EXTI_ConfigStruct.GPIOSel = EXTI_GPIOC;
+
+  HAL_EXTI_SetConfigLine(&EXTI_HandleStruct, &EXTI_ConfigStruct);
+
+  
+
+}
+
+
+
+
+/* GPIO address on PD{0-15} and PE{0-7} */
+GPIO_InitTypeDef  GPIO_InitStructure;
 void gpio_addr(void) {
 	GPIO_InitStructure.Pin = 
 		GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7 | 
