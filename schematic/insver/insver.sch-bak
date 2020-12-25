@@ -241,25 +241,25 @@ Text GLabel 9700 4100 2    50   Output ~ 0
 A12
 Text GLabel 9700 4200 2    50   Output ~ 0
 A13
-Text GLabel 9700 4300 2    50   Input ~ 0
+Text GLabel 9700 4300 2    50   Output ~ 0
 A14
-Text GLabel 9700 4400 2    50   Input ~ 0
+Text GLabel 9700 4400 2    50   Output ~ 0
 A15
-Text GLabel 9700 4500 2    50   Input ~ 0
+Text GLabel 9700 4500 2    50   Output ~ 0
 A16
-Text GLabel 9700 4600 2    50   Input ~ 0
+Text GLabel 9700 4600 2    50   Output ~ 0
 A17
-Text GLabel 9700 4700 2    50   Input ~ 0
+Text GLabel 9700 4700 2    50   Output ~ 0
 A18
-Text GLabel 9700 4800 2    50   Input ~ 0
+Text GLabel 9700 4800 2    50   Output ~ 0
 A19
-Text GLabel 9700 4900 2    50   Input ~ 0
+Text GLabel 9700 4900 2    50   Output ~ 0
 A20
-Text GLabel 9700 5000 2    50   Input ~ 0
+Text GLabel 9700 5000 2    50   Output ~ 0
 A21
-Text GLabel 9700 5100 2    50   Input ~ 0
+Text GLabel 9700 5100 2    50   Output ~ 0
 A22
-Text GLabel 9700 5200 2    50   Input ~ 0
+Text GLabel 9700 5200 2    50   Output ~ 0
 A23
 Entry Wire Line
 	9350 2800 9450 2900
@@ -271,39 +271,39 @@ Text GLabel 10400 2450 2    50   BiDi ~ 0
 D01
 Entry Wire Line
 	10050 2350 10150 2450
-Text GLabel 10400 2550 2    50   Input ~ 0
+Text GLabel 10400 2550 2    50   BiDi ~ 0
 D02
 Entry Wire Line
 	10050 2450 10150 2550
-Text GLabel 10400 2650 2    50   Input ~ 0
+Text GLabel 10400 2650 2    50   BiDi ~ 0
 D03
 Entry Wire Line
 	10050 2550 10150 2650
-Text GLabel 10400 2750 2    50   Input ~ 0
+Text GLabel 10400 2750 2    50   BiDi ~ 0
 D04
 Entry Wire Line
 	10050 2650 10150 2750
-Text GLabel 10400 2850 2    50   Input ~ 0
+Text GLabel 10400 2850 2    50   BiDi ~ 0
 D05
 Entry Wire Line
 	10050 2750 10150 2850
-Text GLabel 10400 2950 2    50   Input ~ 0
+Text GLabel 10400 2950 2    50   BiDi ~ 0
 D06
 Entry Wire Line
 	10050 2850 10150 2950
-Text GLabel 10400 3050 2    50   Input ~ 0
+Text GLabel 10400 3050 2    50   BiDi ~ 0
 D07
 Entry Wire Line
 	10050 2950 10150 3050
-Text GLabel 10400 3150 2    50   Input ~ 0
+Text GLabel 10400 3150 2    50   BiDi ~ 0
 D08
 Entry Wire Line
 	10050 3050 10150 3150
-Text GLabel 10400 3250 2    50   Input ~ 0
+Text GLabel 10400 3250 2    50   BiDi ~ 0
 D09
 Entry Wire Line
 	10050 3150 10150 3250
-Text GLabel 10400 3350 2    50   Input ~ 0
+Text GLabel 10400 3350 2    50   BiDi ~ 0
 D10
 Entry Wire Line
 	10050 3250 10150 3350
@@ -317,15 +317,15 @@ Entry Wire Line
 	10050 3650 10150 3750
 Entry Wire Line
 	10050 3750 10150 3850
-Text GLabel 10400 3450 2    50   Input ~ 0
+Text GLabel 10400 3450 2    50   BiDi ~ 0
 D11
-Text GLabel 10400 3550 2    50   Input ~ 0
+Text GLabel 10400 3550 2    50   BiDi ~ 0
 D12
-Text GLabel 10400 3650 2    50   Input ~ 0
+Text GLabel 10400 3650 2    50   BiDi ~ 0
 D13
-Text GLabel 10400 3750 2    50   Input ~ 0
+Text GLabel 10400 3750 2    50   BiDi ~ 0
 D14
-Text GLabel 10400 3850 2    50   Input ~ 0
+Text GLabel 10400 3850 2    50   BiDi ~ 0
 D15
 Wire Wire Line
 	1850 4900 1900 4900
@@ -546,13 +546,11 @@ A14
 Text Label 9450 4400 0    50   ~ 0
 A15
 Text GLabel 3350 1800 2    50   Output ~ 0
-~WE
+~WR
 Wire Wire Line
 	2000 1550 2000 1600
-Text GLabel 2700 1600 1    50   Output ~ 0
-~CE
 Text GLabel 3050 1600 1    50   Output ~ 0
-~RE
+~RD
 Wire Wire Line
 	3750 4350 3700 4350
 Wire Wire Line
@@ -674,8 +672,6 @@ Wire Wire Line
 	3350 1800 3150 1800
 Wire Wire Line
 	3050 1600 3050 1900
-Wire Wire Line
-	2700 1600 2700 2000
 Wire Wire Line
 	2700 4750 3600 4750
 Connection ~ 3600 4750
@@ -914,7 +910,6 @@ Wire Wire Line
 	3050 2750 3050 1900
 Wire Wire Line
 	2700 2000 2700 2900
-Connection ~ 2700 2000
 Connection ~ 2700 2900
 Wire Wire Line
 	2700 2900 2750 2900
@@ -1125,16 +1120,21 @@ Text Notes 8100 7650 0    50   ~ 0
 12/19/2020\n
 Text Notes 7150 6850 0    79   ~ 0
 GBA cartridge bus de-multiplexing and handling \nsequencial bus accessing, using 74191 as counter.\n
-Wire Bus Line
-	2300 3800 2300 5250
+Connection ~ 2700 2000
 Wire Bus Line
 	2300 5250 9350 5250
 Wire Bus Line
 	2500 2200 10050 2200
 Wire Bus Line
-	2500 2200 2500 3900
-Wire Bus Line
 	10050 2200 10050 3800
 Wire Bus Line
 	9350 2750 9350 5250
+Wire Bus Line
+	2300 3800 2300 5250
+Wire Bus Line
+	2500 2200 2500 3900
+Wire Wire Line
+	2700 1600 2700 2000
+Text GLabel 2700 1600 1    50   Output ~ 0
+~CE
 $EndSCHEMATC

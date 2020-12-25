@@ -546,13 +546,11 @@ A14
 Text Label 9450 4400 0    50   ~ 0
 A15
 Text GLabel 3350 1800 2    50   Output ~ 0
-~WE
+~WR
 Wire Wire Line
 	2000 1550 2000 1600
-Text GLabel 2700 1600 1    50   Output ~ 0
-~CE
 Text GLabel 3050 1600 1    50   Output ~ 0
-~RE
+~RD
 Wire Wire Line
 	3750 4350 3700 4350
 Wire Wire Line
@@ -674,8 +672,6 @@ Wire Wire Line
 	3350 1800 3150 1800
 Wire Wire Line
 	3050 1600 3050 1900
-Wire Wire Line
-	2700 1600 2700 2000
 Wire Wire Line
 	2700 4750 3600 4750
 Connection ~ 3600 4750
@@ -914,7 +910,6 @@ Wire Wire Line
 	3050 2750 3050 1900
 Wire Wire Line
 	2700 2000 2700 2900
-Connection ~ 2700 2000
 Connection ~ 2700 2900
 Wire Wire Line
 	2700 2900 2750 2900
@@ -1125,16 +1120,21 @@ Text Notes 8100 7650 0    50   ~ 0
 12/19/2020\n
 Text Notes 7150 6850 0    79   ~ 0
 GBA cartridge bus de-multiplexing and handling \nsequencial bus accessing, using 74191 as counter.\n
-Wire Bus Line
-	2300 3800 2300 5250
+Connection ~ 2700 2000
 Wire Bus Line
 	2300 5250 9350 5250
 Wire Bus Line
 	2500 2200 10050 2200
 Wire Bus Line
-	2500 2200 2500 3900
-Wire Bus Line
 	10050 2200 10050 3800
 Wire Bus Line
 	9350 2750 9350 5250
+Wire Bus Line
+	2300 3800 2300 5250
+Wire Bus Line
+	2500 2200 2500 3900
+Wire Wire Line
+	2700 1600 2700 2000
+Text GLabel 2700 1600 1    50   Output ~ 0
+~CS1
 $EndSCHEMATC

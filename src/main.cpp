@@ -1,50 +1,6 @@
 
 #include "main.h"
 
-/* GPIO interrupt on PCx */
-void gpio_int(void) {
-
-  EXTI_HandleTypeDef EXTI_HandleStruct;
-  EXTI_HandleStruct.Line = EXTI_LINE_0;
-
-  EXTI_ConfigTypeDef EXTI_ConfigStruct;
-  EXTI_ConfigStruct.Line = EXTI_LINE_0; //Exti lines 0 to 15 are linked to gpio pin number 0 to 15.
-  EXTI_ConfigStruct.Mode = EXTI_MODE_INTERRUPT;
-  EXTI_ConfigStruct.Trigger = EXTI_TRIGGER_RISING;
-  EXTI_ConfigStruct.GPIOSel = EXTI_GPIOC;
-
-  HAL_EXTI_SetConfigLine(&EXTI_HandleStruct, &EXTI_ConfigStruct);
-
-  
-
-}
-
-
-
-
-/* GPIO address on PD{0-15} and PE{0-7} */
-GPIO_InitTypeDef  GPIO_InitStructure;
-void gpio_addr(void) {
-	GPIO_InitStructure.Pin = 
-		GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7 | 
-    GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
-	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStructure.Pull = GPIO_PULLDOWN;
-	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
-}
-
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-
-int main(void) {
-  HAL_Init();
-  SystemClock_Config();
-  MX_GPIO_Init();
-  while (1) { }
-}
-
 void SystemClock_Config(void) {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -65,29 +21,72 @@ void SystemClock_Config(void) {
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) Error_Handler();
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
-    Error_Handler();
-  }
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) Error_Handler();
 }
 
-static void MX_GPIO_Init(void) {
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+/* GPIO INT /CS1:PC0 */
+void GPIO_INT_Init(void) {
+
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+  EXTI_HandleTypeDef EXTI_HandleStruct; 
+  EXTI_HandleStruct.Line = EXTI_LINE_0;
+
+  EXTI_ConfigTypeDef EXTI_ConfigStruct;
+  EXTI_ConfigStruct.Line = EXTI_LINE_0; //Exti lines 0 to 15 are linked to gpio pin number 0 to 15.
+  EXTI_ConfigStruct.Mode = EXTI_MODE_INTERRUPT;
+  EXTI_ConfigStruct.Trigger = EXTI_TRIGGER_FALLING;
+  EXTI_ConfigStruct.GPIOSel = EXTI_GPIOC;
+
+  HAL_EXTI_SetConfigLine(&EXTI_HandleStruct, &EXTI_ConfigStruct);
+  
+  //STM32F4XX Interrupt Number Definition: STM32F407Lib\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+void GPIO_Init(void) {
+  
+  GPIO_InitTypeDef  GPIO_InitStructure;
+	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+
+  //GPIO INPUT /CS1:PC0 /RD:PC1 /WR:PC2
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  //GPIO INPUT A{0-23}:PD{0-15},PE{0-7}
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7 | 
+    GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+
   __HAL_RCC_GPIOE_CLK_ENABLE();
+  GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+  //GPIO INPUT/OUTPUT D{0-15}:PF{0-15}
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7 | 
+    GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
+
+  //GPIO OUTPUT DBG:PA0
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT;
+  GPIO_InitStructure.Pin = GPIO_PIN_0;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 void Error_Handler(void) {
@@ -96,6 +95,15 @@ void Error_Handler(void) {
 }
 
 #ifdef  USE_FULL_ASSERT
-void assert_failed(uint8_t *file, uint32_t line) {
-}
+void assert_failed(uint8_t *file, uint32_t line) { }
 #endif
+
+int main(void) {
+
+  HAL_Init();
+  SystemClock_Config();
+  GPIO_INT_Init();
+  GPIO_Init();
+  
+  while (1) { }
+}
