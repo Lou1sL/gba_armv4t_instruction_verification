@@ -9,7 +9,7 @@ GBA采用ARM CPU，卡带访问同理分为Non-Sequential和Sequential，第一�
 
 卡带A0-A15共用D0-D15，2Bytes每访问。
 
-gba卡带3.3v 16.78MHz。（stm32f4引脚3.3v APB2 168MHz APB1 84MHz，都是3.3v不需要上下拉电阻）。
+gba卡带3.3v 16.78MHz。（stm32f4引脚3.3v APB2 84MHz APB1 42MHz，都是3.3v不需要上下拉电阻）。
 
 
 GBA卡带时钟：
