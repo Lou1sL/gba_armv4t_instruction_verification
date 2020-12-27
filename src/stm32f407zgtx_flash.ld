@@ -59,11 +59,11 @@ _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
 /* Specify the memory areas */
-MEMORY
-{
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
-CCMRAM (xrw)      : ORIGIN = 0x10000000, LENGTH = 64K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
+MEMORY {
+  RAM       (xrw) : ORIGIN = 0x20000000, LENGTH = 128K
+  CCMRAM    (xrw) : ORIGIN = 0x10000000, LENGTH = 64K
+  FLASH     (rx)  : ORIGIN = 0x08000000, LENGTH = 896K
+  FLASHDATA (rx)  : ORIGIN = 0x080E0000, LENGTH = 128K /* RM0090.pdf FLASH_SECTOR_11 */
 }
 
 /* Define output sections */
@@ -204,6 +204,15 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+
+  .flash_data (NOLOAD):
+  {
+    . = ALIGN(4);
+    _flash_data_start = .;
+    KEEP(*(.flash_data))
+    . = ALIGN(4);
+    _flash_data_end = .;
+  } >FLASHDATA
 }
 
 

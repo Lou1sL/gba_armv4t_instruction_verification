@@ -9,7 +9,7 @@ GBA采用ARM CPU，卡带访问同理分为Non-Sequential和Sequential，第一�
 
 卡带A0-A15共用D0-D15，2Bytes每访问。
 
-gba卡带3.3v 16.78MHz。（stm32f4引脚3.3v APB2 84MHz APB1 42MHz，都是3.3v不需要上下拉电阻）。
+gba卡带3.3v 16.78MHz。（stm32f4都是3.3v不需要上下拉电阻，GPIO在APB2上max 84MHz）。
 
 
 GBA卡带时钟：
@@ -22,9 +22,9 @@ GBA卡带时钟：
 
 4: /cs1 hi
 
-读卡带：在/cs1 hi → lo 的lowering edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。
+读卡带：在/cs1 hi → lo 的falling edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。
 
-写卡带：在/cs1 hi → lo 的lowering edge latch addr，/wr lo → hi 时 get data 并 addr increment。
+写卡带：在/cs1 hi → lo 的falling edge latch addr，/wr lo → hi 时 get data 并 addr increment。
 
 
 大致原理及步骤：

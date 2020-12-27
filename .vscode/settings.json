@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.inc": "c",
+        "xmemory": "c",
+        "memory": "c",
+        "array": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "iterator": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "random": "cpp",
+        "algorithm": "cpp"
+    }
+}

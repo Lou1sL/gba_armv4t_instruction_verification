@@ -44,7 +44,7 @@ OBJS  = $(SRCS:.c=.o)
 
 # Compiling Flags ------------------
 
-CXXFLAGS  = -g -O2 -Wall -std=c++17 -T $(LINKER_PATH)
+CXXFLAGS  = -g -O3 -Wall -std=c++17 -T $(LINKER_PATH)
 CXXFLAGS += -DUSE_HAL_DRIVER -DSTM32F407xx
 CXXFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
 CXXFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
