@@ -63,7 +63,7 @@ static void GPIO_Init(void) {
   __HAL_RCC_GPIOB_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_6;
   GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Pull = GPIO_NOPULL;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStructure.Alternate = GPIO_AF2_TIM4;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -96,7 +96,7 @@ static void GPIO_Init(void) {
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
 
-  //GPIO OUTPUT DBG:PF0
+  //GPIO OUTPUT DBG_INF:PF0 DBG_WRN:PF1 DBG_ERR:PF2
   __HAL_RCC_GPIOF_CLK_ENABLE();
   HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
   GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
@@ -108,8 +108,7 @@ static void GPIO_Init(void) {
 
 void Error_Handler(void) {
   __disable_irq();
-  DBG_ERR_ON;
-  while (1);
+  DBG_ERR_TRAP;
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -144,6 +143,7 @@ void assert_failed(uint8_t *file, uint32_t line) { }
 
 
 #define INIT_PATTERN 0b1111
+#define GPIO_CTRL GPIOC->IDR
 #define IS_PATTERN_IN_SEQ(ct) ((ct & 0b1111) == 0b1110)
 #define IS_CS1_HI(ct) ((ct & 0b0001) == 0b0001)
 #define IS_CS1_LO(ct) ((ct & 0b0001) == 0b0000)
@@ -167,6 +167,10 @@ void DumpWrite32(uint32_t offset, uint32_t data) {
   HAL_FLASH_Lock();
 }
 
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	DBG_INF_ON;
+}
+
 uint16_t dmabuf[512];
 
 int main(void) {
@@ -185,8 +189,7 @@ int main(void) {
   HAL_StatusTypeDef status;
   status = HAL_DMA_Start_IT(&hdma_tim4_ch1, (uint32_t)&GPIO_DATA_I, (uint32_t)dmabuf, 1);
   if(status != HAL_OK){
-    DBG_ERR_ON;
-    while(1);
+    DBG_ERR_TRAP;
   }
   __HAL_TIM_ENABLE_DMA(&htim4, TIM_DMA_UPDATE);
   __HAL_TIM_ENABLE(&htim4);
