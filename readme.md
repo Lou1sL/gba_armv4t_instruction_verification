@@ -47,3 +47,8 @@ DMA1
 6：开发板将待验证指令传入模拟器中执行，期间开发板向实机无限返回跳转offset=0指令，使实机再次卡在0x08000000处死循环。  
 7：验证模拟器的寄存器组和gba实机产生的寄存器dump的一致性，并将结果记录。  
 8：该条指令验证完毕，回到第3步生成下条验证指令，直至验证完成。  
+  
+  
+https://www.st.com/content/ccc/resource/technical/document/application_note/54/0f/67/eb/47/34/45/40/DM00042534.pdf/files/DM00042534.pdf/jcr:content/translations/en.DM00042534.pdf  
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjvzsqq5PDtAhUjCqYKHUjfBSUQFjABegQIBRAC&url=https%3A%2F%2Fwww.st.com%2Fresource%2Fen%2Fapplication_note%2Fdm00169730-parallel-synchronous-transmission-using-gpio-and-dma-stmicroelectronics.pdf&usg=AOvVaw0tJyZqBQnNJoi3XcYrdK8v  
+  

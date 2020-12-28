@@ -47,6 +47,7 @@ static void TIM_Init(void){
   if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
 }
 
+//DMA1_Stream0_BASE: 0x40026010
 static void DMA_Init(void){
   __HAL_RCC_DMA1_CLK_ENABLE();
   HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
@@ -59,8 +60,16 @@ static void GPIO_Init(void) {
 
   //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1Str0)
   //see stm32f4xx_hal_msp.c
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  GPIO_InitStructure.Pin = GPIO_PIN_6;
+  GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStructure.Alternate = GPIO_AF2_TIM4;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   //GPIO INPUT /CS1:PC0 /RD:PC1 /WR:PC2 /CS2:PC3
+  //GPIOC 0x40020810
   __HAL_RCC_GPIOC_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
@@ -70,6 +79,7 @@ static void GPIO_Init(void) {
 
   //GPIO INPUT A{0-15}:PD{0-15}
   //GPIO INPUT/OUTPUT D{0-15}:PD{0-15}
+  //GPIOD 0x40020C10
   __HAL_RCC_GPIOD_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2  | GPIO_PIN_3  | GPIO_PIN_4  | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7 | 
     GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
@@ -89,7 +99,7 @@ static void GPIO_Init(void) {
   //GPIO OUTPUT DBG:PF0
   __HAL_RCC_GPIOF_CLK_ENABLE();
   HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
-  GPIO_InitStructure.Pin = GPIO_PIN_0;
+  GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStructure.Pull = GPIO_PULLDOWN;
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -98,7 +108,8 @@ static void GPIO_Init(void) {
 
 void Error_Handler(void) {
   __disable_irq();
-  while (1) { }
+  DBG_ERR_ON;
+  while (1);
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -113,8 +124,8 @@ void assert_failed(uint8_t *file, uint32_t line) { }
 #define GPIO_AD_LO GPIOD->IDR
 #define GPIO_AD_HI (GPIOE->IDR & 0xFF)
 
-#define GPIO_D00_D15_I GPIOD->IDR
-#define GPIO_D00_D15_O GPIOD->ODR
+#define GPIO_DATA_I GPIOD->IDR
+#define GPIO_DATA_O GPIOD->ODR
 
 // GBA BUS(NOT CART BUS) CART SEC
 //rom ws0 0x08000000 0x09FFFFFF 0x01FFFFFF cs1
@@ -130,7 +141,6 @@ void assert_failed(uint8_t *file, uint32_t line) { }
 
 #define ADDR(hi,lo) ((hi << 17) | (lo << 1) | 0)
 
-#define DBG_OUT(val) GPIOF->ODR = val
 
 
 #define INIT_PATTERN 0b1111
@@ -139,33 +149,53 @@ void assert_failed(uint8_t *file, uint32_t line) { }
 #define IS_CS1_LO(ct) ((ct & 0b0001) == 0b0000)
 #define IS_RD_LO(ct) ((ct & 0b0010) == 0b0000)
 
-
-uint16_t data_dump_flash[0x20] __attribute__ ((section(".flash_data")));
-void Dump_Init(){
+uint16_t data_dump_flash[DATA_FLASH_LEN] __attribute__ ((section(".flash_data")));
+void DumpClear(){
   HAL_FLASH_Unlock();
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR );
   FLASH_Erase_Sector(FLASH_SECTOR_11, VOLTAGE_RANGE_3); // 0x080E0000
   HAL_FLASH_Lock();
 }
-void Write_Dump_16(uint32_t offset, uint16_t data) {
+void DumpWrite16(uint32_t offset, uint16_t data) {
   HAL_FLASH_Unlock();
   HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, 0x080E0000 + offset, data);
   HAL_FLASH_Lock();
 }
-void Write_Dump_32(uint32_t offset, uint32_t data) {
+void DumpWrite32(uint32_t offset, uint32_t data) {
   HAL_FLASH_Unlock();
   HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, 0x080E0000 + offset, data);
   HAL_FLASH_Lock();
 }
 
+uint16_t dmabuf[512];
+
 int main(void) {
+
+  for(int i=0; i<512; i++) dmabuf[i] = 0x69;
 
   HAL_Init();
   SystemClock_Config();
   GPIO_Init();
   DMA_Init();
   TIM_Init();
-  Dump_Init();
+
+  DumpClear();
+
+	
+  HAL_StatusTypeDef status;
+  status = HAL_DMA_Start_IT(&hdma_tim4_ch1, (uint32_t)&GPIO_DATA_I, (uint32_t)dmabuf, 1);
+  if(status != HAL_OK){
+    DBG_ERR_ON;
+    while(1);
+  }
+  __HAL_TIM_ENABLE_DMA(&htim4, TIM_DMA_UPDATE);
+  __HAL_TIM_ENABLE(&htim4);
+  DBG_WRN_ON;
+  while(1);
+
+
+
+
 
   uint32_t ad_lo[4] = {0};
   uint32_t ad_hi[4] = {0};
@@ -183,7 +213,7 @@ int main(void) {
   }
 
   for(int i=0; i<0x100; i++){
-    Write_Dump_32(i*4, buffer[i]);
+    DumpWrite32(i*4, buffer[i]);
   }
   //uint16_t old_ct = INIT_PATTERN;
   //while(p < 4){
@@ -201,18 +231,10 @@ int main(void) {
     //old_ct = gpio_ct;
   //}
 
-  //Write_Dump_32(0x00, ad_hi[0]); Write_Dump_32(0x10, ad_lo[0]); Write_Dump_32(0x20, ADDR(ad_hi[0], ad_lo[0]));
-  //Write_Dump_32(0x04, ad_hi[1]); Write_Dump_32(0x14, ad_lo[1]); Write_Dump_32(0x24, ADDR(ad_hi[1], ad_lo[1]));
-  //Write_Dump_32(0x08, ad_hi[2]); Write_Dump_32(0x18, ad_lo[2]); Write_Dump_32(0x28, ADDR(ad_hi[2], ad_lo[2]));
-  //Write_Dump_32(0x0C, ad_hi[3]); Write_Dump_32(0x1C, ad_lo[3]); Write_Dump_32(0x2C, ADDR(ad_hi[3], ad_lo[3]));
-  //Write_Dump_32(0x00, addr_list[0]);
-  //Write_Dump_32(0x04, addr_list[1]);
-  //Write_Dump_32(0x08, addr_list[2]);
-  //Write_Dump_32(0x0C, addr_list[3]);
-  //Write_Dump_32(0x10, data_list[0]);
-  //Write_Dump_32(0x14, data_list[1]);
-  //Write_Dump_32(0x18, data_list[2]);
-  //Write_Dump_32(0x1C, data_list[3]);
-  DBG_OUT(1);
+  //DumpWrite32(0x00, ad_hi[0]); DumpWrite32(0x10, ad_lo[0]); DumpWrite32(0x20, ADDR(ad_hi[0], ad_lo[0]));
+  //DumpWrite32(0x04, ad_hi[1]); DumpWrite32(0x14, ad_lo[1]); DumpWrite32(0x24, ADDR(ad_hi[1], ad_lo[1]));
+  //DumpWrite32(0x08, ad_hi[2]); DumpWrite32(0x18, ad_lo[2]); DumpWrite32(0x28, ADDR(ad_hi[2], ad_lo[2]));
+  //DumpWrite32(0x0C, ad_hi[3]); DumpWrite32(0x1C, ad_lo[3]); DumpWrite32(0x2C, ADDR(ad_hi[3], ad_lo[3]));
+  
   while(1);
 }
