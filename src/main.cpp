@@ -1,6 +1,9 @@
 
 #include "main.h"
 
+TIM_HandleTypeDef htim4;
+DMA_HandleTypeDef hdma_tim4_ch1;
+
 void SystemClock_Config(void) {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -24,42 +27,46 @@ void SystemClock_Config(void) {
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) Error_Handler();
 }
 
-/* GPIO INT /CS1:PC0 */
-static void GPIO_INT_Init(void) {
-  //STM32F4XX Interrupt Number Definition: STM32F407Lib\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h
-  //HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-  //HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-  //HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-  //HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-  //HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+static void TIM_Init(void){
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 65535;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_IC_Init(&htim4) != HAL_OK) Error_Handler();
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK) Error_Handler();
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
+}
+
+static void DMA_Init(void){
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 }
 
 static void GPIO_Init(void) {
   
   GPIO_InitTypeDef  GPIO_InitStructure;
 
-  //GPIO FALING INPUT /CS1:PC0 /RD:PC1 /WR:PC2 /CS2:PC3
+  //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1Str0)
+  //see stm32f4xx_hal_msp.c
+
+  //GPIO INPUT /CS1:PC0 /RD:PC1 /WR:PC2 /CS2:PC3
   __HAL_RCC_GPIOC_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
-  //GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStructure.Pull = GPIO_PULLUP;
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-  //GPIO RISING INPUT /RD:PF4
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  GPIO_InitStructure.Pin = GPIO_PIN_4;
-  //GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStructure.Pull = GPIO_PULLUP;
-	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
 
   //GPIO INPUT A{0-15}:PD{0-15}
   //GPIO INPUT/OUTPUT D{0-15}:PD{0-15}
@@ -79,14 +86,14 @@ static void GPIO_Init(void) {
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
 
-  //GPIO OUTPUT DBG:PG0
-  __HAL_RCC_GPIOG_CLK_ENABLE();
-  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_RESET);
+  //GPIO OUTPUT DBG:PF0
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
   GPIO_InitStructure.Pin = GPIO_PIN_0;
   GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStructure.Pull = GPIO_PULLDOWN;
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStructure);
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
 }
 
 void Error_Handler(void) {
@@ -123,13 +130,14 @@ void assert_failed(uint8_t *file, uint32_t line) { }
 
 #define ADDR(hi,lo) ((hi << 17) | (lo << 1) | 0)
 
-#define DBG_OUT(val) GPIOG->ODR = val
+#define DBG_OUT(val) GPIOF->ODR = val
 
-// /CS2:HI /WR:HI /RD:HI /CS1:LO
+
 #define INIT_PATTERN 0b1111
 #define IS_PATTERN_IN_SEQ(ct) ((ct & 0b1111) == 0b1110)
-#define IS_OLD_CS1_HI(old_ct) ((old_ct & 0b0001) == 0b0001)
-#define IS_OLD_RD_LO(old_ct) ((old_ct & 0b0010) == 0b0000)
+#define IS_CS1_HI(ct) ((ct & 0b0001) == 0b0001)
+#define IS_CS1_LO(ct) ((ct & 0b0001) == 0b0000)
+#define IS_RD_LO(ct) ((ct & 0b0010) == 0b0000)
 
 
 uint16_t data_dump_flash[0x20] __attribute__ ((section(".flash_data")));
@@ -155,35 +163,48 @@ int main(void) {
   HAL_Init();
   SystemClock_Config();
   GPIO_Init();
+  DMA_Init();
+  TIM_Init();
   Dump_Init();
-  GPIO_INT_Init();
 
   uint32_t ad_lo[4] = {0};
   uint32_t ad_hi[4] = {0};
   uint32_t  data[4] = {0};
   int p = 0;
 
-  uint16_t old_ct = INIT_PATTERN;
-  while(p < 4){
-    uint16_t gpio_ct = GPIOC->IDR;
+  uint32_t buffer[0x100] ={0};
+  while(p<0x100){
     uint16_t gpio_ad_lo = GPIOD->IDR;
-    uint16_t gpio_ad_hi = GPIOE->IDR;
-    if(IS_PATTERN_IN_SEQ(gpio_ct)){
-      if(IS_OLD_CS1_HI(old_ct)){
-        ad_lo[p] = gpio_ad_lo;
-        ad_hi[p] = gpio_ad_hi;
-        p++;
-      }
+    uint16_t gpio_ct = GPIOC->IDR;
+    if(IS_RD_LO(gpio_ct)){
+      buffer[p] = GPIOD->IDR;
+      p++;
     }
-    old_ct = gpio_ct;
   }
 
-  Write_Dump_32(0x00, ad_hi[0]); Write_Dump_32(0x10, ad_lo[0]); Write_Dump_32(0x20, ADDR(ad_hi[0], ad_lo[0]));
-  Write_Dump_32(0x04, ad_hi[1]); Write_Dump_32(0x14, ad_lo[1]); Write_Dump_32(0x24, ADDR(ad_hi[1], ad_lo[1]));
-  Write_Dump_32(0x08, ad_hi[2]); Write_Dump_32(0x18, ad_lo[2]); Write_Dump_32(0x28, ADDR(ad_hi[2], ad_lo[2]));
-  Write_Dump_32(0x0C, ad_hi[3]); Write_Dump_32(0x1C, ad_lo[3]); Write_Dump_32(0x2C, ADDR(ad_hi[3], ad_lo[3]));
-  DBG_OUT(1);
-  while(1);
+  for(int i=0; i<0x100; i++){
+    Write_Dump_32(i*4, buffer[i]);
+  }
+  //uint16_t old_ct = INIT_PATTERN;
+  //while(p < 4){
+    //uint16_t gpio_ct = GPIOC->IDR;
+    //asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+    //uint16_t gpio_ad_lo = GPIOD->IDR;
+    //uint16_t gpio_ad_hi = GPIOE->IDR;
+    //if(IS_PATTERN_IN_SEQ(gpio_ct)){
+    //  if(IS_OLD_CS1_HI(old_ct)){
+    //    ad_lo[p] = gpio_ad_lo;
+    //    ad_hi[p] = gpio_ad_hi;
+    //    p++;
+    //  }
+    //}
+    //old_ct = gpio_ct;
+  //}
+
+  //Write_Dump_32(0x00, ad_hi[0]); Write_Dump_32(0x10, ad_lo[0]); Write_Dump_32(0x20, ADDR(ad_hi[0], ad_lo[0]));
+  //Write_Dump_32(0x04, ad_hi[1]); Write_Dump_32(0x14, ad_lo[1]); Write_Dump_32(0x24, ADDR(ad_hi[1], ad_lo[1]));
+  //Write_Dump_32(0x08, ad_hi[2]); Write_Dump_32(0x18, ad_lo[2]); Write_Dump_32(0x28, ADDR(ad_hi[2], ad_lo[2]));
+  //Write_Dump_32(0x0C, ad_hi[3]); Write_Dump_32(0x1C, ad_lo[3]); Write_Dump_32(0x2C, ADDR(ad_hi[3], ad_lo[3]));
   //Write_Dump_32(0x00, addr_list[0]);
   //Write_Dump_32(0x04, addr_list[1]);
   //Write_Dump_32(0x08, addr_list[2]);
@@ -192,6 +213,6 @@ int main(void) {
   //Write_Dump_32(0x14, data_list[1]);
   //Write_Dump_32(0x18, data_list[2]);
   //Write_Dump_32(0x1C, data_list[3]);
-  //DBG_OUT(1);
-  //while(1);
+  DBG_OUT(1);
+  while(1);
 }

@@ -1,30 +1,30 @@
-毕业论文第四章 一个自动化的ARM指令集架构模拟器的测试方法（Chapter 4: A General Approach on Automatic ARM ISA Emulator Debugging） 的源代码及电路图。
+毕业论文第四章 一个自动化的ARM指令集架构模拟器的测试方法（Chapter 4: A General Approach on Automatic ARM ISA Emulator Debugging） 的源代码及电路图。  
+  
+GBA卡带：  
+GBA采用ARM CPU，卡带访问同理分为Non-Sequential和Sequential，第一次读写一定为Non-Sequential，地址和数据分时复用一组卡带总线。  
+卡带A0-A23, 24位地址+1最低位默认0 = 25位 寻址32MBytes(1FFFFFF)。  
+卡带A0-A15共用D0-D15，2Bytes每访问。  
+gba卡带3.3v 16.78MHz。（stm32f4都是3.3v不需要上下拉电阻，GPIO在APB2上max 84MHz）。  
+  
+GBA卡带时钟：  
+  
+1：AD0-A23 addr, /cs1 lo, cart latch addr  
+2: /rd or /wr lo, prepare AD0-AD15 data  
+3: AD0-AD15 data, /rd or /wr hi, rising edge rd or wr, address increment  
+4: /cs1 hi  
+  
+读卡带：在/cs1 hi → lo 的falling edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。  
+写卡带：在/cs1 hi → lo 的falling edge latch addr，/wr lo → hi 时 get data 并 addr increment。  
+  
 
 
-GBA卡带：
+DMA1  
+#define DMA1_Stream0      ((DMA_Stream_TypeDef *) DMA1_Stream0_BASE)  
+#define DMA1_Stream0_BASE (DMA1_BASE + 0x010UL)  
+#define DMA1_BASE         (AHB1PERIPH_BASE + 0x6000UL)  
+#define AHB1PERIPH_BASE   (PERIPH_BASE + 0x00020000UL)  
+#define PERIPH_BASE       0x40000000UL /*!< Peripheral base address in the alias region */  
 
-GBA采用ARM CPU，卡带访问同理分为Non-Sequential和Sequential，第一次读写一定为Non-Sequential，地址和数据分时复用一组卡带总线。
-
-卡带A0-A23, 24位地址+1最低位默认0 = 25位 寻址32MBytes(1FFFFFF)。
-
-卡带A0-A15共用D0-D15，2Bytes每访问。
-
-gba卡带3.3v 16.78MHz。（stm32f4都是3.3v不需要上下拉电阻，GPIO在APB2上max 84MHz）。
-
-
-GBA卡带时钟：
-
-1：AD0-A23 addr, /cs1 lo, cart latch addr
-
-2: /rd or /wr lo, prepare AD0-AD15 data
-
-3: AD0-AD15 data, /rd or /wr hi, rising edge rd or wr, address increment
-
-4: /cs1 hi
-
-读卡带：在/cs1 hi → lo 的falling edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。
-
-写卡带：在/cs1 hi → lo 的falling edge latch addr，/wr lo → hi 时 get data 并 addr increment。
 
 
 大致原理及步骤：
