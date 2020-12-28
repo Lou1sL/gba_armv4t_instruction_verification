@@ -8,16 +8,20 @@ gba卡带3.3v 16.78MHz。（stm32f4都是3.3v不需要上下拉电阻，GPIO在A
   
 GBA卡带时钟：  
   
-1：AD0-A23 addr, /cs1 lo, cart latch addr  
-2: /rd or /wr lo, prepare AD0-AD15 data  
-3: AD0-AD15 data, /rd or /wr hi, rising edge rd or wr, address increment  
-4: /cs1 hi  
+1:  AD0-A23 addr, /cs1 lo, cart latch addr  
+2:  /rd or /wr lo, prepare AD0-AD15 data  
+3:  AD0-AD15 data, /rd or /wr hi, rising edge rd or wr, address increment  
+4:  /cs1 hi  
   
 读卡带：在/cs1 hi → lo 的falling edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。  
 写卡带：在/cs1 hi → lo 的falling edge latch addr，/wr lo → hi 时 get data 并 addr increment。  
   
-![](https://raw.githubusercontent.com/toshirodesu/gba_armv4t_instruction_verification/main/doc/timing.png)
+![如图](https://raw.githubusercontent.com/toshirodesu/gba_armv4t_instruction_verification/main/doc/timing.png)
+  
 
+使用单片机STM32f407ZGTx。  
+目前暂时先实现数据嗅探，通过/rd lo → hi 触发GPIO到内存的DMA，其中/rd接PB6(TIM4_CH1)，走DMA1 Stream 0 Peripheral to Memory。  
+  
 DMA1  
 #define DMA1_Stream0      ((DMA_Stream_TypeDef *) DMA1_Stream0_BASE)  
 #define DMA1_Stream0_BASE (DMA1_BASE + 0x010UL)  
