@@ -16,7 +16,7 @@ GBA卡带时钟：
 读卡带：在/cs1 hi → lo 的falling edge latch addr，/rd hi → lo 时 present data，lo → hi 时 addr increment。  
 写卡带：在/cs1 hi → lo 的falling edge latch addr，/wr lo → hi 时 get data 并 addr increment。  
   
-
+![](https://raw.githubusercontent.com/toshirodesu/gba_armv4t_instruction_verification/main/doc/timing.png)
 
 DMA1  
 #define DMA1_Stream0      ((DMA_Stream_TypeDef *) DMA1_Stream0_BASE)  
