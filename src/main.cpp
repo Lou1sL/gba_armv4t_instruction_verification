@@ -1,10 +1,12 @@
 
 #include "main.h"
 
-TIM_HandleTypeDef htim4;
-DMA_HandleTypeDef hdma_tim4_ch1;
+TIM_HandleTypeDef      timHandle;
+TIM_SlaveConfigTypeDef slaveCfg;
+TIM_OC_InitTypeDef     ocCfg;
+TIM_IC_InitTypeDef     icCfg;
 
-void SystemClock_Config(void) {
+void SystemClock_Init(void) {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   __HAL_RCC_PWR_CLK_ENABLE();
@@ -18,47 +20,61 @@ void SystemClock_Config(void) {
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) Error_Handler();
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) ErrorHandler();
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) Error_Handler();
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) ErrorHandler();
 }
 
+static void HalfTransferComplete(DMA_HandleTypeDef *DmaHandle);
+static void TransferComplete(DMA_HandleTypeDef *DmaHandle);
+static void TransferError(DMA_HandleTypeDef *DmaHandle);
 static void TIM_Init(void){
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_IC_InitTypeDef sConfigIC = {0};
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_IC_Init(&htim4) != HAL_OK) Error_Handler();
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK) Error_Handler();
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
-}
+  timHandle.Instance = TIM4;
+  timHandle.Init.Period            = 0xFFFF;
+  timHandle.Init.Prescaler         = 40000 - 1; // 0
+  //timHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  timHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+  timHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
+  timHandle.Init.RepetitionCounter = 0;
+  if (HAL_TIM_Base_Init(&timHandle) != HAL_OK) ErrorHandler();
 
-//DMA1_Stream0_BASE: 0x40026010
-static void DMA_Init(void){
-  __HAL_RCC_DMA1_CLK_ENABLE();
-  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+  //NOT SUPPORT: slaveCfg.SlaveMode         = TIM_SLAVEMODE_COMBINED_RESETTRIGGER;
+  slaveCfg.SlaveMode         = TIM_SLAVEMODE_TRIGGER;
+  slaveCfg.InputTrigger      = TIM_TS_TI1FP1;
+  slaveCfg.TriggerPolarity   = TIM_TRIGGERPOLARITY_FALLING;
+  slaveCfg.TriggerPrescaler  = TIM_TRIGGERPRESCALER_DIV1;
+  slaveCfg.TriggerFilter     = 0;
+  if (HAL_TIM_SlaveConfigSynchronization(&timHandle, &slaveCfg) != HAL_OK) ErrorHandler();
+
+  ocCfg.OCMode       = TIM_OCMODE_TOGGLE;
+  ocCfg.OCPolarity   = TIM_OCPOLARITY_HIGH;
+  ocCfg.Pulse        = 400;
+  ocCfg.OCNPolarity  = TIM_OCPOLARITY_HIGH;
+  ocCfg.OCFastMode   = TIM_OCFAST_DISABLE;
+  ocCfg.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  ocCfg.OCIdleState  = TIM_OCIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&timHandle, &ocCfg, TIM_CHANNEL_2) != HAL_OK) ErrorHandler();
+
+  icCfg.ICPolarity  = TIM_ICPOLARITY_RISING;
+  icCfg.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  icCfg.ICPrescaler = TIM_ICPSC_DIV1;
+  icCfg.ICFilter    = 1; // 0
+  if (HAL_TIM_IC_ConfigChannel(&timHandle, &icCfg, TIM_CHANNEL_1) != HAL_OK) ErrorHandler();
+
+  timHandle.hdma[TIM_DMA_ID_CC1]->XferHalfCpltCallback = HalfTransferComplete;
+  timHandle.hdma[TIM_DMA_ID_CC1]->XferCpltCallback = TransferComplete;
+  timHandle.hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TransferError;
 }
 
 static void GPIO_Init(void) {
   
   GPIO_InitTypeDef  GPIO_InitStructure;
 
-  //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1Str0)
+  //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1Stream0)
   //see stm32f4xx_hal_msp.c
   __HAL_RCC_GPIOB_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_6;
@@ -106,7 +122,7 @@ static void GPIO_Init(void) {
   HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
 }
 
-void Error_Handler(void) {
+void ErrorHandler(void) {
   __disable_irq();
   DBG_ERR_TRAP;
 }
@@ -171,73 +187,100 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	DBG_INF_ON;
 }
 
-uint16_t dmabuf[512];
+volatile int TimeoutFlag = 0;
+volatile int LastITHalfComplete = 0;
+volatile int32_t FullDataIndex = 0;  /* index of reception table */
 
-int main(void) {
+static uint8_t aFull_Buffer[MAX_FRAME_SIZE] = {0};
+static uint8_t aDST_Buffer[BUFFER_SIZE] = {0};
 
-  for(int i=0; i<512; i++) dmabuf[i] = 0x69;
-
-  HAL_Init();
-  SystemClock_Config();
-  GPIO_Init();
-  DMA_Init();
-  TIM_Init();
-
-  DumpClear();
-
-	
-  HAL_StatusTypeDef status;
-  status = HAL_DMA_Start_IT(&hdma_tim4_ch1, (uint32_t)&GPIO_DATA_I, (uint32_t)dmabuf, 1);
-  if(status != HAL_OK){
-    DBG_ERR_TRAP;
+static void HalfTransferComplete(DMA_HandleTypeDef *DmaHandle) {
+  int position = 0;
+  LastITHalfComplete = 1;
+  for (int i = 0; i < BUFFER_SIZE/2; i++) {
+    aFull_Buffer[FullDataIndex] = aDST_Buffer[i+position];
+    FullDataIndex++;
   }
-  __HAL_TIM_ENABLE_DMA(&htim4, TIM_DMA_UPDATE);
-  __HAL_TIM_ENABLE(&htim4);
-  DBG_WRN_ON;
-  while(1);
+}
 
-
-
-
-
-  uint32_t ad_lo[4] = {0};
-  uint32_t ad_hi[4] = {0};
-  uint32_t  data[4] = {0};
-  int p = 0;
-
-  uint32_t buffer[0x100] ={0};
-  while(p<0x100){
-    uint16_t gpio_ad_lo = GPIOD->IDR;
-    uint16_t gpio_ct = GPIOC->IDR;
-    if(IS_RD_LO(gpio_ct)){
-      buffer[p] = GPIOD->IDR;
-      p++;
-    }
+static void TransferComplete(DMA_HandleTypeDef *DmaHandle) {
+  int position = BUFFER_SIZE/2;
+  LastITHalfComplete = 0;
+  for (int i = 0; i < BUFFER_SIZE/2; i++) {
+    aFull_Buffer[FullDataIndex] = aDST_Buffer[i+position];
+    FullDataIndex++;
   }
 
   for(int i=0; i<0x100; i++){
-    DumpWrite32(i*4, buffer[i]);
+    DumpWrite32(i*4, aDST_Buffer[i]);
   }
-  //uint16_t old_ct = INIT_PATTERN;
-  //while(p < 4){
-    //uint16_t gpio_ct = GPIOC->IDR;
-    //asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
-    //uint16_t gpio_ad_lo = GPIOD->IDR;
-    //uint16_t gpio_ad_hi = GPIOE->IDR;
-    //if(IS_PATTERN_IN_SEQ(gpio_ct)){
-    //  if(IS_OLD_CS1_HI(old_ct)){
-    //    ad_lo[p] = gpio_ad_lo;
-    //    ad_hi[p] = gpio_ad_hi;
-    //    p++;
-    //  }
-    //}
-    //old_ct = gpio_ct;
-  //}
+}
 
-  //DumpWrite32(0x00, ad_hi[0]); DumpWrite32(0x10, ad_lo[0]); DumpWrite32(0x20, ADDR(ad_hi[0], ad_lo[0]));
-  //DumpWrite32(0x04, ad_hi[1]); DumpWrite32(0x14, ad_lo[1]); DumpWrite32(0x24, ADDR(ad_hi[1], ad_lo[1]));
-  //DumpWrite32(0x08, ad_hi[2]); DumpWrite32(0x18, ad_lo[2]); DumpWrite32(0x28, ADDR(ad_hi[2], ad_lo[2]));
-  //DumpWrite32(0x0C, ad_hi[3]); DumpWrite32(0x1C, ad_lo[3]); DumpWrite32(0x2C, ADDR(ad_hi[3], ad_lo[3]));
+static void TransferError(DMA_HandleTypeDef *DmaHandle) {
+  ErrorHandler();
+}
+
+static void TimeOut_Process(void) {
   
+	uint32_t data_index = 0;
+	uint32_t dma_cndtr;
+	uint32_t index = 0;
+	uint32_t full_frame_size;
+	
+  /* get remaining number of free space in BUFFER */
+  //https://github.com/betaflight/betaflight/issues/8550
+  //NOT SUPPORT: dma_cndtr = (uint16_t) (timHandle.hdma[TIM_DMA_ID_CC1]->Instance->CNDTR);
+  dma_cndtr = (uint16_t) (timHandle.hdma[TIM_DMA_ID_CC1]->Instance->NDTR);
+
+  if (LastITHalfComplete == 1) data_index = BUFFER_SIZE/2;
+
+  while (data_index < BUFFER_SIZE - dma_cndtr) {
+    aFull_Buffer[FullDataIndex] = aDST_Buffer[data_index];
+    data_index++;
+    FullDataIndex++;
+  }
+
+  full_frame_size = FullDataIndex - (NB_END_DATA_TO_DISCARD + NB_START_DATA_TO_DISCARD);
+  //full_frame_size = FullDataIndex - NB_END_DATA_TO_DISCARD - NB_START_DATA_TO_DISCARD;
+
+  /* In case need to discard some data at start of frame, we recompute table */
+  if (NB_START_DATA_TO_DISCARD > 0) {
+    for (index = 0; index < full_frame_size + NB_START_DATA_TO_DISCARD ; index++)
+      aFull_Buffer[index] = aFull_Buffer[index + NB_START_DATA_TO_DISCARD];
+  }
+
+  if (full_frame_size == 0) while (1);
+  if (full_frame_size > MAX_FRAME_SIZE) while (1);
+}
+
+
+int main(void) {
+
+  HAL_Init();
+  SystemClock_Init();
+  GPIO_Init();
+  TIM_Init();
+
+  DumpClear();
+	
+  HAL_StatusTypeDef status;
+  status = HAL_DMA_Start_IT(timHandle.hdma[TIM_DMA_ID_CC1], (GPIOE_BASE + 0x10 + 1), (uint32_t)&aDST_Buffer, BUFFER_SIZE);
+  if(status != HAL_OK){
+    ErrorHandler();
+  }
+
+  __HAL_TIM_ENABLE_DMA(&timHandle, TIM_DMA_CC1);
+  __HAL_TIM_ENABLE_IT(&timHandle, TIM_IT_CC2);
+  TIM_CCxChannelCmd(timHandle.Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
+  TIM_CCxChannelCmd(timHandle.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
+
+  while (TimeoutFlag == 0);
+  TimeOut_Process();
+
+  DBG_WRN_ON;
   while(1);
+}
+
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
+  TimeoutFlag = 1;
 }

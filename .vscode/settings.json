@@ -12,6 +12,8 @@
         "string_view": "cpp",
         "random": "cpp",
         "algorithm": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "variant": "cpp",
+        "chrono": "cpp"
     }
 }
