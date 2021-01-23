@@ -183,9 +183,6 @@ void DumpWrite32(uint32_t offset, uint32_t data) {
   HAL_FLASH_Lock();
 }
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-	DBG_INF_ON;
-}
 
 volatile int TimeoutFlag = 0;
 volatile int LastITHalfComplete = 0;
@@ -214,6 +211,7 @@ static void TransferComplete(DMA_HandleTypeDef *DmaHandle) {
   for(int i=0; i<0x100; i++){
     DumpWrite32(i*4, aDST_Buffer[i]);
   }
+  DBG_INF_ON;
 }
 
 static void TransferError(DMA_HandleTypeDef *DmaHandle) {

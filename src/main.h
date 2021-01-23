@@ -8,7 +8,6 @@ extern "C" {
 
 #include "stm32f4xx_hal.h"
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 void ErrorHandler(void);
 
 #define DBG_INF_ON (GPIOF->ODR = (GPIOF->ODR | 0b001))
