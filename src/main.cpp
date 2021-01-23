@@ -262,7 +262,7 @@ int main(void) {
   DumpClear();
 	
   HAL_StatusTypeDef status;
-  status = HAL_DMA_Start_IT(timHandle.hdma[TIM_DMA_ID_CC1], (GPIOE_BASE + 0x10 + 1), (uint32_t)&aDST_Buffer, BUFFER_SIZE);
+  status = HAL_DMA_Start_IT(timHandle.hdma[TIM_DMA_ID_CC1], (GPIOD_BASE + 0x10 + 1), (uint32_t)&aDST_Buffer, BUFFER_SIZE);
   if(status != HAL_OK){
     ErrorHandler();
   }
