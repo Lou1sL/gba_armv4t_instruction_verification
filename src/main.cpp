@@ -35,20 +35,22 @@ static void TransferError(DMA_HandleTypeDef *DmaHandle);
 static void TIM_Init(void){
   timHandle.Instance = TIM4;
   timHandle.Init.Period            = 0xFFFF;
-  timHandle.Init.Prescaler         = 40000 - 1; // 0
-  //timHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  timHandle.Init.Prescaler         = 0; //40000 - 1;
+  timHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   timHandle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
   timHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
   timHandle.Init.RepetitionCounter = 0;
-  if (HAL_TIM_Base_Init(&timHandle) != HAL_OK) ErrorHandler();
+  if(HAL_TIM_Base_Init(&timHandle) != HAL_OK) ErrorHandler();
+  if(HAL_TIM_IC_Init(&timHandle) != HAL_OK) ErrorHandler();
+  if(HAL_TIM_OC_Init(&timHandle) != HAL_OK) ErrorHandler();
 
   //NOT SUPPORT: slaveCfg.SlaveMode         = TIM_SLAVEMODE_COMBINED_RESETTRIGGER;
-  slaveCfg.SlaveMode         = TIM_SLAVEMODE_TRIGGER;
+  slaveCfg.SlaveMode         = TIM_SLAVEMODE_RESET;
   slaveCfg.InputTrigger      = TIM_TS_TI1FP1;
-  slaveCfg.TriggerPolarity   = TIM_TRIGGERPOLARITY_FALLING;
+  slaveCfg.TriggerPolarity   = TIM_INPUTCHANNELPOLARITY_FALLING;
   slaveCfg.TriggerPrescaler  = TIM_TRIGGERPRESCALER_DIV1;
   slaveCfg.TriggerFilter     = 0;
-  if (HAL_TIM_SlaveConfigSynchronization(&timHandle, &slaveCfg) != HAL_OK) ErrorHandler();
+  if (HAL_TIM_SlaveConfigSynchro(&timHandle, &slaveCfg) != HAL_OK) ErrorHandler();
 
   ocCfg.OCMode       = TIM_OCMODE_TOGGLE;
   ocCfg.OCPolarity   = TIM_OCPOLARITY_HIGH;
@@ -59,7 +61,7 @@ static void TIM_Init(void){
   ocCfg.OCIdleState  = TIM_OCIDLESTATE_RESET;
   if (HAL_TIM_PWM_ConfigChannel(&timHandle, &ocCfg, TIM_CHANNEL_2) != HAL_OK) ErrorHandler();
 
-  icCfg.ICPolarity  = TIM_ICPOLARITY_RISING;
+  icCfg.ICPolarity  = CLK_LATCHING_DATA_EDGE;
   icCfg.ICSelection = TIM_ICSELECTION_DIRECTTI;
   icCfg.ICPrescaler = TIM_ICPSC_DIV1;
   icCfg.ICFilter    = 1; // 0
@@ -74,7 +76,7 @@ static void GPIO_Init(void) {
   
   GPIO_InitTypeDef  GPIO_InitStructure;
 
-  //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1Stream0)
+  //GPIO RISING INPUT /RD:PB6 (TIM4_CH1 DMA1_Stream0)
   //see stm32f4xx_hal_msp.c
   __HAL_RCC_GPIOB_CLK_ENABLE();
   GPIO_InitStructure.Pin = GPIO_PIN_6;
@@ -192,26 +194,25 @@ static uint8_t aFull_Buffer[MAX_FRAME_SIZE] = {0};
 static uint8_t aDST_Buffer[BUFFER_SIZE] = {0};
 
 static void HalfTransferComplete(DMA_HandleTypeDef *DmaHandle) {
-  int position = 0;
+  DBG_INF_ON;
   LastITHalfComplete = 1;
   for (int i = 0; i < BUFFER_SIZE/2; i++) {
-    aFull_Buffer[FullDataIndex] = aDST_Buffer[i+position];
+    aFull_Buffer[FullDataIndex] = aDST_Buffer[i];
     FullDataIndex++;
   }
 }
 
 static void TransferComplete(DMA_HandleTypeDef *DmaHandle) {
-  int position = BUFFER_SIZE/2;
+  DBG_INF_ON;
   LastITHalfComplete = 0;
-  for (int i = 0; i < BUFFER_SIZE/2; i++) {
-    aFull_Buffer[FullDataIndex] = aDST_Buffer[i+position];
+  for (int i = BUFFER_SIZE/2; i < BUFFER_SIZE; i++) {
+    aFull_Buffer[FullDataIndex] = aDST_Buffer[i];
     FullDataIndex++;
   }
 
   for(int i=0; i<0x100; i++){
-    DumpWrite32(i*4, aDST_Buffer[i]);
+    DumpWrite32(i*4, aFull_Buffer[i]);
   }
-  DBG_INF_ON;
 }
 
 static void TransferError(DMA_HandleTypeDef *DmaHandle) {
@@ -220,6 +221,8 @@ static void TransferError(DMA_HandleTypeDef *DmaHandle) {
 
 static void TimeOut_Process(void) {
   
+  DBG_WRN_ON;
+
 	uint32_t data_index = 0;
 	uint32_t dma_cndtr;
 	uint32_t index = 0;
@@ -260,8 +263,9 @@ int main(void) {
   TIM_Init();
 
   DumpClear();
-	
+ 
   HAL_StatusTypeDef status;
+  //TODO
   status = HAL_DMA_Start_IT(timHandle.hdma[TIM_DMA_ID_CC1], (GPIOD_BASE + 0x10 + 1), (uint32_t)&aDST_Buffer, BUFFER_SIZE);
   if(status != HAL_OK){
     ErrorHandler();

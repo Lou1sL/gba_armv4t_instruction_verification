@@ -31,7 +31,7 @@ void DumpWrite32(uint32_t offset, uint32_t data);
 #endif
 
 
-#define CLK_RANGE1
+#define CLK_RANGE5
 
 /**************************************************************************************/
 #define DUMMY_START_DATA 4        /* 4 dummy data are sent at start to avoid timing issue on the first data sent */
@@ -75,11 +75,11 @@ void DumpWrite32(uint32_t offset, uint32_t data);
 /* the dma buffer size is smaller than full frame size                                     */
 /* to see impact of CPU bus loading when reaching                                          */
 /* dma buffer half complete and transfer complete state                                    */
-#define BUFFER_SIZE           40000      /* buffer size for DMA (should be multiple of 2)  */
+#define BUFFER_SIZE           400      /* 40000 buffer size for DMA (should be multiple of 2)  */
 /*******************************************************************************************/
 /* for large buffer size, the max frame size must be reduced to enter in the SRAM size     */
 /* so the MAX_FRAME SIZE parameter must be reduced :                                       */
 /*                  from 65535 to 55010 (with 40000 for buffer size) for  clock ratio 8    */
 /*                  from 65535 to 60510 (with 32000 for buffer size) for  clock ratio 9    */
-#define MAX_FRAME_SIZE    55010     /* MAX FRAME SIZE RECEIVED .. to reserve memory space  */
+#define MAX_FRAME_SIZE    400     /* 55010 MAX FRAME SIZE RECEIVED .. to reserve memory space  */
 /*******************************************************************************************/

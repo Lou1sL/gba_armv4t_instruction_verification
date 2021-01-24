@@ -20,8 +20,11 @@ void TIM4_IRQHandler(void) {
 
 void DMA1_Stream0_IRQHandler(void) {
     //HAL_DMA_IRQHandler(timHandle.hdma[TIM_DMA_ID_CC1]);
+
+    
     //if((DMA1->ISR & DMA_FLAG_TC5) != RESET) { //STM32L4
-    // DMA_Handle_index TIM DMA Handle Index /*!< Index of the DMA handle used for Capture/Compare 1 DMA requests */
+    // DMA_Handle_index TIM DMA Handle Index
+    // Index of the DMA handle used for Capture/Compare 1 DMA requests
     if(__HAL_DMA_GET_FLAG(timHandle.hdma[TIM_DMA_ID_CC1], __HAL_DMA_GET_TC_FLAG_INDEX(timHandle.hdma[TIM_DMA_ID_CC1])) != RESET){
         //DMA1->IFCR |= DMA_FLAG_TC5; //STM32L4
         __HAL_DMA_CLEAR_FLAG(timHandle.hdma[TIM_DMA_ID_CC1], __HAL_DMA_GET_TC_FLAG_INDEX(timHandle.hdma[TIM_DMA_ID_CC1]));
@@ -30,4 +33,5 @@ void DMA1_Stream0_IRQHandler(void) {
         __HAL_UNLOCK(timHandle.hdma[TIM_DMA_ID_CC1]);
         timHandle.hdma[TIM_DMA_ID_CC1]->XferCpltCallback(timHandle.hdma[TIM_DMA_ID_CC1]);
     }
+    
 }
