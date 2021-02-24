@@ -1,11 +1,3 @@
-#include <gba_console.h>
-#include <gba_interrupt.h>
-#include <gba_systemcalls.h>
-#include <gba_timers.h>
-#include <stdio.h>
-#include <string.h>
-
-
 const u32 BLOCK_DATA_TRANSFER = 0b11101000100000000000000000000000;
 
 u8 input [0x04];
@@ -63,6 +55,7 @@ void doTest(){
 	printf("\nSUCCESS!\n");
 }
 
+
 //------------------------------------------------
 //vim devkitARM/arm-none-eabi/lib/gba_cart.ld
 __attribute__((noinline, section(".specialsec"))) extern void iwram_func (void) {
@@ -74,20 +67,17 @@ __attribute__((noinline, section(".specialsec"))) extern void iwram_func (void) 
 		for(u32 i=0; i<(16*10000); i++) { uint8_t* const temp = (uint8_t*)i; }
 	}
 }
-
+/**
 int main() {
-	//irqInit();
-	//irqEnable(IRQ_VBLANK);
-	//consoleDemoInit();
-	//doTest();
+	irqInit();
+	irqEnable(IRQ_VBLANK);
+	consoleDemoInit();
+	doTest();
 	//memcpy((void*)0x03000000, __specialsec_start, __specialsec_end - __specialsec_start);
 	//memcpy((void*)(u32)0x02000000, (void*)(u32)0x0000000008011fb8, (void*)(u32)0x0000000008012078 - (void*)(u32)0x0000000008011fb8);
 	//printf("COPY COMPLETE!\n");
 	//((void (*)(void))(u32)0x02000000)();
 	//printf("FIN!\n");
-	for(;;){
-		asm("NOP");
-		asm("NOP");
-	}
 	//iwram_func();
 }
+**/

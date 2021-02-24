@@ -36,7 +36,7 @@ CFLAGS	:=	-g -Wall -O3\
 
 CFLAGS	+=	$(INCLUDE)
 
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
 
 ASFLAGS	:=	$(ARCH) $(INCLUDE)
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $@).map
