@@ -15,36 +15,35 @@ static inline void PrintReg(ARM7TDMI& cpu){
 		else printf("CPSR:%08lX \n", cpu.registers.cpsr.value);
     }
 }
-
+u8 result[0xf0];
 static inline void RegSync(ARM7TDMI& cpu){
 
     std::uint32_t* v;
 
     v = &(cpu.registers.cpsr.value);
-    __asm(" mov r0, %[val]" : : [val] "r" (v));
-    __asm(" mrs r1, cpsr");
-    __asm(" str r1, [r0]");
+    __asm("mov r0, %[val]" : : [val] "r" (v));
+    __asm("mrs r1, cpsr");
+    __asm("str r1, [r0]");
 
     v = &(cpu.registers[0]);
-    __asm(" mov r0, %[val]" : : [val] "r" (v));
-    __asm(" str r0, [r0]");
-    __asm(" str r1, [r0, #4]");
-    __asm(" str r2, [r0, #8]");
-    __asm(" str r3, [r0, #12]");
-    __asm(" str r4, [r0, #16]");
-    __asm(" str r5, [r0, #20]");
-    __asm(" str r6, [r0, #24]");
-    __asm(" str r7, [r0, #28]");
-    __asm(" str r8, [r0, #32]");
-    __asm(" str r9, [r0, #36]");
-    __asm(" str r10, [r0, #40]");
-    __asm(" str r11, [r0, #44]");
-    __asm(" str r12, [r0, #48]");
-    __asm(" str r13, [r0, #52]");
-    __asm(" str r14, [r0, #56]");
-    __asm(" str r15, [r0, #60]");
+    __asm("mov r0, %[val]" : : [val] "r" (v));
+    __asm("stmia r0, {r0-r15}");
     
-    PrintReg(cpu);
+    //PrintReg(cpu);
+    
+    
+    __asm__ __volatile__(
+        "ldr   r0, =result   \n"
+        "stmia r0, {r0-r15}  \n"
+        "mrs   r1, CPSR      \n"
+        "str   r1, [R0,#64]  \n"
+        : : : "r0", "r1", "memory");
+        
+	for(u8 i=2;i<17;i++){
+		u32 Reg = ((u32)result[i*4+3] << 24) | ((u32)result[i*4+2] << 16) | ((u32)result[i*4+1] <<  8) | ((u32)result[i*4+0] <<  0);
+		if(i != 16) printf("R%02d :%08lX \n",i,Reg);
+		else printf("CPSR:%08lX \n",Reg);
+	}
 }
 
 int main(void){

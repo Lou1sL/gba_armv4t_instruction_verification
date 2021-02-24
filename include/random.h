@@ -11,7 +11,7 @@ void Init(){
 	input[3] = 0x01;
 }
 
-void saveRegisters(void) {
+static inline void saveRegisters(void) {
 	__asm__ __volatile__(
 		//"ldr r2, =input+1   \n"
 		//"ldr r3, [r2]   \n"
@@ -28,7 +28,7 @@ void saveRegisters(void) {
 	: : : "r0", "r1", "memory");
 }
 
-void printSavedRegisters(){
+static inline void printSavedRegisters(){
 	for(u8 i=2;i<17;i++){
 		u32 Reg = 
 			((u32)result[i*4+3] << 24) | 
