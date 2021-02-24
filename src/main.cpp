@@ -52,15 +52,13 @@ static inline void TestInstruction(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
     //Both should be synced by now :)
     
     //Fill instruction pipeline
-    __asm("nop");
-    __asm("nop");
-    __asm("nop");
+    __asm("nop"); __asm("nop"); __asm("nop");
 
     /** TEST CASE START **/
     __asm("mov r2, #0xEE");
     /** TEST CASE END   **/
 
-    //Obtain a copy of physical (It causes r15 increase)
+    //Obtain a copy of physical (It causes r15 to increase)
     __asm("ldr r0, %[val]" : : [val] "m" (ptr_phytmp));
     __asm("mrs r1, cpsr");
     __asm("str r1, [r0, #64]");
@@ -68,15 +66,10 @@ static inline void TestInstruction(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
     ptr_phytmp[15] -= 4*4;
 
     //Temp registers are useless (r0, r1)
-    ptr_phytmp[0] = 0;
-    ptr_phytmp[1] = 0;
-    ptr_simgreg[0] = 0;
-    ptr_simgreg[1] = 0;
+    ptr_phytmp[0] = 0; ptr_phytmp[1] = 0; ptr_simgreg[0] = 0; ptr_simgreg[1] = 0;
 
     //Fill instruction pipeline
-    sim.Step();
-    sim.Step();
-    sim.Step();
+    sim.Step(); sim.Step(); sim.Step();
 
     /** TEST START **/
     sim.Step();
