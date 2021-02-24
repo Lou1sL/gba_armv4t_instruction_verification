@@ -35,5 +35,5 @@ int main() {
 	irqEnable(IRQ_VBLANK);
 	consoleDemoInit();
 	ArmTest();
-	for(;;);
+	while(1) VBlankIntrWait();
 }

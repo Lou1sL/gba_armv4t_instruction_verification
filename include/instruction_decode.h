@@ -134,6 +134,6 @@ bool ARM7TDMI::ReadCondition(CONDITION c){
     return condition_table[registers.cpsr.nzcv][static_cast<int>(c)];
 }
 
-std::array<ARM7TDMI::ARMHandler, 0x1000>   ARM7TDMI::arm_decode_table   = ARM7TDMI::ARMDecodeTableGeneration();
-std::array<ARM7TDMI::ThumbHandler, 0x400>  ARM7TDMI::thumb_decode_table = ARM7TDMI::ThumbDecodeTableGeneration();
-std::array<std::array<bool, 16>, 16>       ARM7TDMI::condition_table    = ARM7TDMI::ConditionTableGeneration();
+const std::array<ARM7TDMI::ARMHandler, 0x1000>   ARM7TDMI::arm_decode_table   = ARM7TDMI::ARMDecodeTableGeneration();
+const std::array<ARM7TDMI::ThumbHandler, 0x400>  ARM7TDMI::thumb_decode_table = ARM7TDMI::ThumbDecodeTableGeneration();
+const std::array<std::array<bool, 16>, 16>       ARM7TDMI::condition_table    = ARM7TDMI::ConditionTableGeneration();

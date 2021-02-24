@@ -18,7 +18,7 @@ public:
     std::uint32_t instruction_register;
     std::uint32_t pipeline[2];
     void Step();
-    static std::array<std::array<bool, 16>, 16>    condition_table;
+    static const std::array<std::array<bool, 16>, 16>    condition_table;
     bool ReadCondition(CONDITION c);
     //Exception
     void EXCEP_RST();
@@ -31,8 +31,8 @@ public:
     //Instruction Decoding
     typedef void (ARM7TDMI::*ARMHandler)(ARMInstruction);
     typedef void (ARM7TDMI::*ThumbHandler)(ThumbInstruction);
-    static std::array<ARMHandler, 0x1000>         arm_decode_table;
-    static std::array<ThumbHandler, 0x400>      thumb_decode_table;
+    static const std::array<ARMHandler, 0x1000>         arm_decode_table;
+    static const std::array<ThumbHandler, 0x400>      thumb_decode_table;
     template <std::uint32_t instruction>
     static constexpr auto ARMDecoder()   -> ARM7TDMI::ARMHandler;
     template <std::uint32_t instruction>
