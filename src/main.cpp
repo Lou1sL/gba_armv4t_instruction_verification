@@ -9,41 +9,44 @@
 
 ARM7TDMI_DEBUG_GBA *cpusim = NULL;
 
-static inline void PrintReg(ARM7TDMI& cpu){
+static inline void PrintSimReg(ARM7TDMI& cpu){
     for(std::size_t i=0; i<17; i++){
-		if(i != 16) printf("R%02d :%08lX \n", i, cpu.registers[i]);
-		else printf("CPSR:%08lX \n", cpu.registers.cpsr.value);
+		if(i != 16) printf("%08lX  ", cpu.registers[i]);
+		else printf("%08lX\n\n", cpu.registers.cpsr.value);
     }
 }
-u8 result[0xf0];
+
+static inline void PrintRealReg(std::uint32_t* reg){
+    for(std::size_t i=0; i<17; i++){
+		if(i != 16) printf("%08lX  ", reg[i]);
+		else printf("%08lX\n\n", reg[16]);
+	}
+}
+
+
 static inline void RegSync(ARM7TDMI& cpu){
+    
+    std::uint32_t reg_tmp[17] = {0};
+    std::uint32_t* ptr_cpsr = &(cpu.registers.cpsr.value);
+    std::uint32_t* ptr_reg  = &(cpu.registers[0]);
+    std::uint32_t* ptr_tmp  = &(reg_tmp[0]);
 
-    std::uint32_t* v;
-
-    v = &(cpu.registers.cpsr.value);
-    __asm("mov r0, %[val]" : : [val] "r" (v));
+    __asm("ldr r0, %[val]" : : [val] "m" (ptr_cpsr));
     __asm("mrs r1, cpsr");
     __asm("str r1, [r0]");
 
-    v = &(cpu.registers[0]);
-    __asm("mov r0, %[val]" : : [val] "r" (v));
+    __asm("ldr r0, %[val]" : : [val] "m" (ptr_reg));
     __asm("stmia r0, {r0-r15}");
     
-    //PrintReg(cpu);
     
-    
-    __asm__ __volatile__(
-        "ldr   r0, =result   \n"
-        "stmia r0, {r0-r15}  \n"
-        "mrs   r1, CPSR      \n"
-        "str   r1, [R0,#64]  \n"
-        : : : "r0", "r1", "memory");
-        
-	for(u8 i=2;i<17;i++){
-		u32 Reg = ((u32)result[i*4+3] << 24) | ((u32)result[i*4+2] << 16) | ((u32)result[i*4+1] <<  8) | ((u32)result[i*4+0] <<  0);
-		if(i != 16) printf("R%02d :%08lX \n",i,Reg);
-		else printf("CPSR:%08lX \n",Reg);
-	}
+
+    __asm("ldr r0, %[val]" : : [val] "m" (ptr_tmp));
+    __asm("mrs r1, cpsr");
+    __asm("str r1, [r0, #64]");
+    __asm("stmia r0, {r0-r15}");
+
+    PrintSimReg(cpu);
+    PrintRealReg(reg_tmp);
 }
 
 int main(void){
