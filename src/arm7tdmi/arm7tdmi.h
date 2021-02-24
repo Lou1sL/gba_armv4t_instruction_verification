@@ -28,6 +28,18 @@ public:
     void EXCEP_PFA();
     void EXCEP_SWI();
     void EXCEP_UND();
+    //Instruction Decoding
+    typedef void (ARM7TDMI::*ARMHandler)(ARMInstruction);
+    typedef void (ARM7TDMI::*ThumbHandler)(ThumbInstruction);
+    static std::array<ARMHandler, 0x1000>         arm_decode_table;
+    static std::array<ThumbHandler, 0x400>      thumb_decode_table;
+    template <std::uint32_t instruction>
+    static constexpr auto ARMDecoder()   -> ARM7TDMI::ARMHandler;
+    template <std::uint32_t instruction>
+    static constexpr auto ThumbDecoder() -> ARM7TDMI::ThumbHandler;
+    static constexpr auto ARMDecodeTableGeneration()   -> std::array<ARM7TDMI::ARMHandler, 0x1000>;
+    static constexpr auto ThumbDecodeTableGeneration() -> std::array<ARM7TDMI::ThumbHandler, 0x400>;
+    static constexpr auto ConditionTableGeneration()   -> std::array<std::array<bool, 16>, 16>;
 private:
     //Pipeline Operation
     inline auto PipelineFetch16(bool isSequential)  -> void;
@@ -113,17 +125,5 @@ private:
     inline void ROR (std::uint32_t& operand, std::uint32_t amount, int& carry, bool reg_specified, bool set_nz);
     inline void SRNZ   (std::uint32_t value);
     inline void SRNZ64 (std::uint64_t value);
-    //Instruction Decoding
-    typedef void (ARM7TDMI::*ARMHandler)(ARMInstruction);
-    typedef void (ARM7TDMI::*ThumbHandler)(ThumbInstruction);
-    static std::array<ARMHandler, 0x1000>         arm_decode_table;
-    static std::array<ThumbHandler, 0x400>      thumb_decode_table;
-    template <std::uint32_t instruction>
-    static constexpr auto ARMDecoder()   -> ARM7TDMI::ARMHandler;
-    template <std::uint32_t instruction>
-    static constexpr auto ThumbDecoder() -> ARM7TDMI::ThumbHandler;
-    static constexpr auto ARMDecodeTableGeneration()   -> std::array<ARM7TDMI::ARMHandler, 0x1000>;
-    static constexpr auto ThumbDecodeTableGeneration() -> std::array<ARM7TDMI::ThumbHandler, 0x400>;
-    static constexpr auto ConditionTableGeneration()   -> std::array<std::array<bool, 16>, 16>;
 };
 

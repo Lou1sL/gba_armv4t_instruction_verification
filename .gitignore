@@ -1,2 +1,4 @@
 ref/
 build/
+old/
+/gba_armv4t_instruction_verification.*

@@ -5,7 +5,7 @@ union StatusRegister {
     std::uint32_t value;
     template<typename T>
     StatusRegister &operator=(const T& other) {
-        if constexpr (std::is_same_v<T, StatusRegister>) { value = other.value; }
+        if constexpr (std::is_same<T, StatusRegister>::value) { value = other.value; }
         else { value = other; }
         return *this;
     }
