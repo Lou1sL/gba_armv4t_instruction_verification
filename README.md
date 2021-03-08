@@ -1,5 +1,7 @@
-A small GBA program for testing instructions.
+A GBA program for testing ARMv4 instruction set simulator.
 
-See win-build-run.cmd for details.
+See make_run.cmd for details.
+
+Require devkitPro dependencies.
 
 ![](https://raw.githubusercontent.com/toshirodesu/gba_armv4t_instruction_verification/main/doc/screenshot.png)
