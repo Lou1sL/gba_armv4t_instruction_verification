@@ -9,6 +9,9 @@
 
 #include "arm7tdmi_gba_debug.h"
 
+//mov r2, #0xEE
+std::uint32_t test_case[] = { 0xE3A020EE };
+
 static inline void PrintRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
 
     std::uint32_t* ptr_simgreg = &(sim.registers.current[0]);
@@ -23,7 +26,7 @@ static inline void PrintRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
 	}
 }
 
-static inline bool VerifyRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
+static inline bool CompareRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
     
     std::uint32_t* ptr_simgreg = &(sim.registers.current[0]);
     std::uint32_t* ptr_simcpsr = &(sim.registers.cpsr.value);
@@ -37,43 +40,52 @@ static inline bool VerifyRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
     return identical;
 }
 
-static inline void TestInstruction(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
+__attribute__((section(".iwram.testinst")))
+extern void TestInstruction(std::uint32_t* ptr_simgreg, std::uint32_t* ptr_simcpsr, std::uint32_t* ptr_phytmp, std::uint32_t* ptr_instruction){
+    
+    //Write test instrucion
+    __asm("ldr r0, %[val]" : : [val] "m" (ptr_instruction));
+    __asm("ldr r0, [r0]");
+    __asm("str r0, [pc, #28]"); //It overwrites offset + 4*(9-2), which is the test case's position
 
-    std::uint32_t* ptr_simgreg = &(sim.registers.current[0]);
-    std::uint32_t* ptr_simcpsr = &(sim.registers.cpsr.value);
-
+    //Sync cpsr of the simulator with physical processor
     __asm("ldr r0, %[val]" : : [val] "m" (ptr_simcpsr));
     __asm("mrs r1, cpsr");
     __asm("str r1, [r0]");
     
+    //Sync general registers of the simulator with physical processor
     __asm("ldr r0, %[val]" : : [val] "m" (ptr_simgreg));
     __asm("stmia r0, {r0-r15}");
-
+    
     //Both should be synced by now :)
     
     //Fill instruction pipeline
     __asm("nop"); __asm("nop"); __asm("nop");
 
     /** TEST CASE START **/
-    __asm("mov r2, #0xEE");
+    __asm("nop"); //This won't be nop because it has been overwritten
     /** TEST CASE END   **/
 
-    //Obtain a copy of physical (It causes r15 to increase)
+    //Obtain a copy of physical registers
     __asm("ldr r0, %[val]" : : [val] "m" (ptr_phytmp));
     __asm("mrs r1, cpsr");
     __asm("str r1, [r0, #64]");
     __asm("stmia r0, {r0-r15}");
+    //Obtaining copy causes r15 to increase
     ptr_phytmp[15] -= 4*4;
-
-    //Temp registers are useless (r0, r1)
+    //Obtaining copy uses temp registers(r0, r1), so they are useless and we reset them to zero
     ptr_phytmp[0] = 0; ptr_phytmp[1] = 0; ptr_simgreg[0] = 0; ptr_simgreg[1] = 0;
+}
 
+void TestInstructionFinish(ARM7TDMI& sim){
     //Fill instruction pipeline
     sim.Step(); sim.Step(); sim.Step();
 
     /** TEST START **/
     sim.Step();
     /** TEST END   **/
+
+    //The result would be in ptr_phytmp for physical processor & we can compare that with the simulated one
 }
 
 int main(void){
@@ -84,9 +96,11 @@ int main(void){
     ARM7TDMI_DEBUG_GBA *sim = new ARM7TDMI_DEBUG_GBA();
     std::uint32_t phy_tmp[17] = {0};
 
-    TestInstruction(sim->cpu, &(phy_tmp[0]));
+    TestInstruction(&(sim->cpu.registers.current[0]), &(sim->cpu.registers.cpsr.value), &(phy_tmp[0]), &(test_case[0]));
+    TestInstructionFinish(sim->cpu);
+
     PrintRegs(sim->cpu, &(phy_tmp[0]));
-    printf(VerifyRegs(sim->cpu, &(phy_tmp[0])) ? "IDENTICAL!\n" : "NOT INDENTICAL!\n");
+    printf(CompareRegs(sim->cpu, &(phy_tmp[0])) ? "IDENTICAL!\n" : "NOT INDENTICAL!\n");
 
 	while(1) VBlankIntrWait();
 }
