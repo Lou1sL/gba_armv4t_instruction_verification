@@ -9,14 +9,14 @@
 
 #include "arm7tdmi_gba_debug.h"
 
-//mov r2, #0xEE
-std::uint32_t test_case[] = { 0xE3A020EE };
+void PrintAddr(){
+    
+}
+bool CompareAddr(){
 
-static inline void PrintRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
+}
 
-    std::uint32_t* ptr_simgreg = &(sim.registers.current[0]);
-    std::uint32_t* ptr_simcpsr = &(sim.registers.cpsr.value);
-
+void PrintRegs(std::uint32_t* ptr_simgreg, std::uint32_t* ptr_simcpsr, std::uint32_t* ptr_phytmp){
     printf("     | SIMULATE | PHYSICAL |\n");
     for(std::size_t i=0; i<17; i++){
 		if(i != 16)
@@ -26,11 +26,7 @@ static inline void PrintRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
 	}
 }
 
-static inline bool CompareRegs(ARM7TDMI& sim, std::uint32_t* ptr_phytmp){
-    
-    std::uint32_t* ptr_simgreg = &(sim.registers.current[0]);
-    std::uint32_t* ptr_simcpsr = &(sim.registers.cpsr.value);
-
+bool CompareRegs(std::uint32_t* ptr_simgreg, std::uint32_t* ptr_simcpsr, std::uint32_t* ptr_phytmp){
     bool identical = true;
     for(std::size_t i=0; i<17; i++){
 	    if(i != 16) identical = ptr_simgreg[i] == ptr_phytmp[i];
@@ -93,14 +89,21 @@ int main(void){
 	irqEnable(IRQ_VBLANK);
 	consoleDemoInit();
 
+    //mov r2, #0xEE
+    std::uint32_t test_case[] = { 0xE3A020EE };
     ARM7TDMI_DEBUG_GBA *sim = new ARM7TDMI_DEBUG_GBA();
-    std::uint32_t phy_tmp[17] = {0};
+    std::uint32_t phy_tmpreg[17] = {0};
 
-    TestInstruction(&(sim->cpu.registers.current[0]), &(sim->cpu.registers.cpsr.value), &(phy_tmp[0]), &(test_case[0]));
+    std::uint32_t* ptr_simgreg = &(sim->cpu.registers.current[0]);
+    std::uint32_t* ptr_simcpsr = &(sim->cpu.registers.cpsr.value);
+    std::uint32_t* ptr_phytmp  = &(phy_tmpreg[0]);
+    std::uint32_t* ptr_ins     = &(test_case[0]);
+
+    TestInstruction(ptr_simgreg, ptr_simcpsr, ptr_phytmp, ptr_ins);
     TestInstructionFinish(sim->cpu);
 
-    PrintRegs(sim->cpu, &(phy_tmp[0]));
-    printf(CompareRegs(sim->cpu, &(phy_tmp[0])) ? "IDENTICAL!\n" : "NOT INDENTICAL!\n");
+    PrintRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp);
+    printf(CompareRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REG IDENTICAL!\n" : "REG NOT INDENTICAL!\n");
 
 	while(1) VBlankIntrWait();
 }
