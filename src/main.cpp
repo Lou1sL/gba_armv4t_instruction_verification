@@ -71,7 +71,7 @@ extern void TestInstruction(
     __asm("mrs r1, cpsr");
     __asm("str r1, [r0]");
     
-    //Use r1 as writable memory pointer
+    //Use r2 as writable memory pointer
     __asm("ldr r2, %[val]" : : [val] "m" (ptr_wrimem));
 
     //Sync general registers of the simulator with physical processor
