@@ -5,6 +5,7 @@
 #include <gba_systemcalls.h>
 #include <gba_timers.h>
 
+#include <memory>
 #include <stdio.h>
 #include <string.h>
 
@@ -109,30 +110,29 @@ void TestInstructionFinish(ARM7TDMI& sim){
 }
 
 int main(void){
-	irqInit();
-	irqEnable(IRQ_VBLANK);
-	consoleDemoInit();
-
+    irqInit();
+    irqEnable(IRQ_VBLANK);
+    consoleDemoInit();
     
-    ARM7TDMI_DEBUG_GBA *sim = new ARM7TDMI_DEBUG_GBA();
+    auto sim = std::make_unique<ARM7TDMI_DEBUG_GBA>();
     std::uint32_t phy_tmpreg[17] = {0};
     std::uint32_t writable_mem[4] = {0};
     std::uint32_t test_case[] = { 0xE3A020EE, 0xE5822000 }; //mov r2, #0xEE / str r2, [r2]
-
+    
     std::uint32_t* ptr_simgreg = &(sim->cpu.registers.current[0]);
     std::uint32_t* ptr_simcpsr = &(sim->cpu.registers.cpsr.value);
     std::uint32_t* ptr_phytmp  = &(phy_tmpreg[0]);
     std::uint32_t* ptr_ins     = &(test_case[1]);
     std::uint32_t* ptr_wrimem  = &(writable_mem[0]);
-
+    
     TestInstruction(ptr_simgreg, ptr_simcpsr, ptr_phytmp, ptr_ins, ptr_wrimem);
     TestInstructionFinish(sim->cpu);
-
+    
     //PrintRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp);
     //printf(VerifyRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REG IDENTICAL!\n" : "REG NOT INDENTICAL!\n");
-
+    
     PrintMem(*sim);
     printf(VerifyMem(*sim) ? "MEM IDENTICAL!\n" : "MEM NOT INDENTICAL!\n");
-
-	while(1) VBlankIntrWait();
+    
+    while(1) VBlankIntrWait();
 }
