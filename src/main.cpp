@@ -128,11 +128,11 @@ int main(void){
     TestInstruction(ptr_simgreg, ptr_simcpsr, ptr_phytmp, ptr_ins, ptr_wrimem);
     TestInstructionFinish(sim->cpu);
     
-    //PrintRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp);
-    //printf(VerifyRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REG IDENTICAL!\n" : "REG NOT INDENTICAL!\n");
+    PrintRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp);
+    printf(VerifyRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REG IDENTICAL!\n" : "REG NOT INDENTICAL!\n");
     
-    PrintMem(*sim);
-    printf(VerifyMem(*sim) ? "MEM IDENTICAL!\n" : "MEM NOT INDENTICAL!\n");
+    //PrintMem(*sim);
+    //printf(VerifyMem(*sim) ? "MEM IDENTICAL!\n" : "MEM NOT INDENTICAL!\n");
     
     while(1) VBlankIntrWait();
 }
