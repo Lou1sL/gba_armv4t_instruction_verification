@@ -129,7 +129,7 @@ int main(void){
     TestInstructionFinish(sim->cpu);
     
     PrintRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp);
-    printf(VerifyRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REG IDENTICAL!\n" : "REG NOT INDENTICAL!\n");
+    printf(VerifyRegs(ptr_simgreg, ptr_simcpsr, ptr_phytmp) ? "REGISTERS IDENTICAL!\n" : "REGISTERS NOT INDENTICAL!\n");
     
     //PrintMem(*sim);
     //printf(VerifyMem(*sim) ? "MEM IDENTICAL!\n" : "MEM NOT INDENTICAL!\n");

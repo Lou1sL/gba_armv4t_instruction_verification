@@ -1,1 +1,2 @@
-docker exec -it mystifying_newton make clean -C /home/gba_armv4t_instruction_verification
+@echo off
+docker run --rm -it -v %cd%:/home/gba_armv4t_instruction_verification -w="/home/gba_armv4t_instruction_verification" devkitpro/devkitarm make clean
